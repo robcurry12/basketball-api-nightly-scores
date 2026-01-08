@@ -139,10 +139,6 @@ class BANS_API {
 		$now = new DateTimeImmutable( 'now', $tz );
 
 		$seasons = self::compute_seasons_to_try( $now );
-		$cutoff  = $now->getTimestamp() - ( 48 * 3600 );
-
-		$best_row_season = null;
-		$best_ts_season  = 0;
 
 		foreach ( $seasons as $season ) {
 			error_log( '[BANS][API] Season scan player=' . $player_id . ' season=' . $season . ' via /games/statistics/players' );
@@ -154,7 +150,7 @@ class BANS_API {
 				)
 			);
 
-			// If empty/errors, attempt alternative endpoint name.
+			// If empty/no results, attempt alternative endpoint name.
 			if ( $statsBySeason['results'] == 0 ) {
 				error_log( '[BANS][API] Empty/error on /games/statistics/players; trying /players/statistics season=' . $season );
 				$statsBySeason = self::get(
@@ -167,60 +163,53 @@ class BANS_API {
 			}
 
 			if ( empty( $statsBySeason['errors'] ) && ! empty( $statsBySeason['response'] ) && is_array( $statsBySeason['response'] ) ) {
-				foreach ( $statsBySeason['response'] as $row ) {
-					$ts = self::extract_game_timestamp( $row, $tz );
-					$gid = isset( $row['game']['id'] ) ? (int) $row['game']['id'] : 0;
-					error_log( '[BANS][API] Season row ts=' . $ts . ' cutoff=' . $cutoff . ' game_id=' . $gid );
-					if ( $ts > 0 && $ts >= $cutoff && $ts > $best_ts_season ) {
-						$best_ts_season  = $ts;
-						$best_row_season = $row;
+				$total = isset( $statsBySeason['results'] ) ? (int) $statsBySeason['results'] : count( $statsBySeason['response'] );
+				$last_index = max( 0, $total - 1 );
+				$stat_row = $statsBySeason['response'][ $last_index ];
+				$gid = isset( $stat_row['game']['id'] ) ? (int) $stat_row['game']['id'] : 0;
+				error_log( '[BANS][API] Using last game from season response index=' . $last_index . ' game_id=' . $gid );
+
+				// Extract best-effort team and game info.
+				$team_name_from_stats = '';
+				if ( isset( $stat_row['team']['name'] ) ) {
+					$team_name_from_stats = (string) $stat_row['team']['name'];
+				}
+
+				$game_id = 0;
+				if ( isset( $stat_row['game']['id'] ) ) {
+					$game_id = (int) $stat_row['game']['id'];
+				} elseif ( isset( $stat_row['id'] ) ) {
+					$game_id = (int) $stat_row['id'];
+				}
+
+				// Normalize statistics payload.
+				$stat_blob = array();
+				if ( isset( $stat_row['statistics'] ) && is_array( $stat_row['statistics'] ) ) {
+					if ( isset( $stat_row['statistics'][0] ) && is_array( $stat_row['statistics'][0] ) ) {
+						$stat_blob = $stat_row['statistics'][0];
+					} else {
+						$stat_blob = $stat_row['statistics'];
 					}
+				} elseif ( isset( $stat_row['points'] ) || isset( $stat_row['rebounds'] ) ) {
+					$stat_blob = $stat_row;
 				}
+
+				$player_name_from_stats = '';
+				if ( isset( $stat_row['player']['name'] ) ) {
+					$player_name_from_stats = (string) $stat_row['player']['name'];
+				}
+
+				return array(
+					'player_name' => $player_name_from_stats ? $player_name_from_stats : $player_name,
+					'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
+					'game_id'     => $game_id,
+					'stats'       => $stat_blob,
+					'errors'      => array(),
+				);
 			}
 		}
 
-		if ( ! empty( $best_row_season ) ) {
-			error_log( '[BANS][API] Using season-based row ts=' . $best_ts_season . ' (within last 48h)' );
-			$stat_row = $best_row_season;
-
-			// Extract best-effort team and game info.
-			$team_name_from_stats = '';
-			if ( isset( $stat_row['team']['name'] ) ) {
-				$team_name_from_stats = (string) $stat_row['team']['name'];
-			}
-
-			$game_id = 0;
-			if ( isset( $stat_row['game']['id'] ) ) {
-				$game_id = (int) $stat_row['game']['id'];
-			} elseif ( isset( $stat_row['id'] ) ) {
-				$game_id = (int) $stat_row['id'];
-			}
-
-			// Normalize statistics payload.
-			$stat_blob = array();
-			if ( isset( $stat_row['statistics'] ) && is_array( $stat_row['statistics'] ) ) {
-				if ( isset( $stat_row['statistics'][0] ) && is_array( $stat_row['statistics'][0] ) ) {
-					$stat_blob = $stat_row['statistics'][0];
-				} else {
-					$stat_blob = $stat_row['statistics'];
-				}
-			} elseif ( isset( $stat_row['points'] ) || isset( $stat_row['rebounds'] ) ) {
-				$stat_blob = $stat_row;
-			}
-
-			$player_name_from_stats = '';
-			if ( isset( $stat_row['player']['name'] ) ) {
-				$player_name_from_stats = (string) $stat_row['player']['name'];
-			}
-
-			return array(
-				'player_name' => $player_name_from_stats ? $player_name_from_stats : $player_name,
-				'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
-				'game_id'     => $game_id,
-				'stats'       => $stat_blob,
-				'errors'      => array(),
-			);
-		}
+		// No season-based results; continue to secondary strategy.
 
 		// 3) Secondary: player-only query over last ~72h (today, yesterday, two days ago in site timezone).
 		$best_row = null;
