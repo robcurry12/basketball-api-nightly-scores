@@ -189,29 +189,59 @@ class BANS_Cron {
 		fputcsv(
 			$fh,
 			array(
-				'player_name',
-				'team_name',
-				'game_id',
-				'points',
-				'rebounds',
-				'assists',
-				'steals',
-				'blocks',
-				'turnovers',
-				'minutes',
-				'fgm',
-				'fga',
-				'ftm',
-				'fta',
-				'tpm',
-				'tpa',
+				'Player',
+				'Team',
+				'Game ID',
+				'Points',
+				'Rebounds',
+				'Assists',
+				'Minutes',
+
+				'Field Goals',
+				'Field Goal Percentage',
+				'3 Points',
+				'3 Point Percentage',
+				'Free Throws',
+				'Free Throw Percentage',
+
+				'FGM',
+				'FGA',
+				'3PM',
+				'3PA',
+				'FTM',
+				'FTA',
 			)
 		);
 
 		foreach ( $rows as $r ) {
-			fputcsv( $fh, $r );
-		}
+			// Ensure order matches the header labels above.
+			fputcsv(
+				$fh,
+				array(
+					$r['player_name'],
+					$r['team_name'],
+					$r['game_id'],
+					$r['points'],
+					$r['rebounds'],
+					$r['assists'],
+					$r['minutes'],
 
+					$r['fg'],
+					$r['fg_pct'],
+					$r['3pt'],
+					$r['3pt_pct'],
+					$r['ft'],
+					$r['ft_pct'],
+
+					$r['fgm'],
+					$r['fga'],
+					$r['3pm'],
+					$r['3pa'],
+					$r['ftm'],
+					$r['fta'],
+				)
+			);
+		}
 		// Errors section.
 		if ( ! empty( $errors ) ) {
 			fputcsv( $fh, array() );

@@ -118,47 +118,38 @@ class BANS_API {
 				&& is_array( $statsBySeason['response'] )
 				&& (int) $statsBySeason['results'] > 0
 			) {
-				$rows = (array) $statsBySeason['response'];
+				$rows = array_values( (array) $statsBySeason['response'] );
 
-				$best_row = null;
-				$best_gid = 0;
+				// Prefer rows matching the configured team_id, but still choose the LAST row.
+				$team_rows = array();
 
-				// Prefer rows matching the configured team_id when present.
 				foreach ( $rows as $row ) {
 					if ( ! is_array( $row ) || empty( $row['game']['id'] ) ) {
 						continue;
 					}
 
-					if ( isset( $row['team']['id'] ) && (int) $row['team']['id'] !== (int) $team_id ) {
-						continue;
-					}
-
-					$gid = (int) $row['game']['id'];
-					if ( $gid > $best_gid ) {
-						$best_gid = $gid;
-						$best_row = $row;
+					if ( isset( $row['team']['id'] ) && (int) $row['team']['id'] === (int) $team_id ) {
+						$team_rows[] = $row;
 					}
 				}
 
-				// If nothing matched team_id (or team.id is missing), fall back to any row.
-				if ( empty( $best_row ) ) {
-					foreach ( $rows as $row ) {
-						if ( ! is_array( $row ) || empty( $row['game']['id'] ) ) {
-							continue;
-						}
+				// If we found team-specific rows, use them; otherwise use all rows.
+				$chosen_set = ! empty( $team_rows ) ? array_values( $team_rows ) : $rows;
 
-						$gid = (int) $row['game']['id'];
-						if ( $gid > $best_gid ) {
-							$best_gid = $gid;
-							$best_row = $row;
-						}
-					}
+				// Defensive: make sure we actually have something before indexing.
+				if ( empty( $chosen_set ) ) {
+					error_log( '[BANS][API] No usable rows after filtering for season=' . $season );
+					continue;
 				}
 
-				$stat_row = $best_row;
-				$gid      = isset( $stat_row['game']['id'] ) ? (int) $stat_row['game']['id'] : 0;
+				$stat_row = $chosen_set[ count( $chosen_set ) - 1 ];
 
-				error_log( '[BANS][API] Using most recent row by highest game.id=' . $gid . ' (season=' . $season . ')' );
+				$gid = isset( $stat_row['game']['id'] ) ? (int) $stat_row['game']['id'] : 0;
+				error_log(
+					'[BANS][API] Using LAST row in response game_id=' . $gid .
+					' (season=' . $season . ', team_filtered=' . ( ! empty( $team_rows ) ? '1' : '0' ) . ')'
+				);
+
 
 				// Extract best-effort team and game info.
 				$team_name_from_stats = '';
