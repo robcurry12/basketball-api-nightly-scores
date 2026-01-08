@@ -23,6 +23,7 @@ class BANS_API {
 		$api_key = isset( $opts['api_key'] ) ? trim( $opts['api_key'] ) : '';
 
 		if ( empty( $api_key ) ) {
+			error_log( '[BANS][API] Missing API key for endpoint ' . $endpoint );
 			return array(
 				'errors' => array( 'Missing API key.' ),
 			);
@@ -42,9 +43,14 @@ class BANS_API {
 			),
 		);
 
+		// Log outbound request (without API key).
+		$qs = ! empty( $query ) ? wp_json_encode( $query ) : '{}';
+		error_log( '[BANS][API] GET ' . $endpoint . ' query=' . $qs );
+
 		$response = wp_remote_get( $url, $args );
 
 		if ( is_wp_error( $response ) ) {
+			error_log( '[BANS][API] HTTP error ' . $endpoint . ': ' . $response->get_error_message() );
 			return array(
 				'errors' => array( $response->get_error_message() ),
 			);
@@ -56,6 +62,8 @@ class BANS_API {
 		$data = json_decode( $body, true );
 
 		if ( 200 !== (int) $code ) {
+			$preview = is_string( $body ) ? substr( $body, 0, 300 ) : '';
+			error_log( '[BANS][API] Non-200 ' . $endpoint . ' code=' . $code . ' body=' . $preview );
 			return array(
 				'errors' => array(
 					'HTTP ' . $code,
@@ -65,11 +73,14 @@ class BANS_API {
 		}
 
 		if ( null === $data ) {
+			error_log( '[BANS][API] Invalid JSON for ' . $endpoint );
 			return array(
 				'errors' => array( 'Invalid JSON response.' ),
 			);
 		}
 
+		$count = isset( $data['response'] ) && is_array( $data['response'] ) ? count( $data['response'] ) : 0;
+		error_log( '[BANS][API] OK ' . $endpoint . ' items=' . $count );
 		return $data;
 	}
 
@@ -96,6 +107,8 @@ class BANS_API {
 		$team_id   = (int) $team_id;
 		$player_id = (int) $player_id;
 
+		error_log( '[BANS][API] Start stats resolution team_id=' . $team_id . ' player_id=' . $player_id );
+
 		// 1) Get player and team names (best-effort).
 		$player_name = '';
 		$team_name   = '';
@@ -103,11 +116,17 @@ class BANS_API {
 		$p = self::get( '/players', array( 'id' => $player_id ) );
 		if ( empty( $p['errors'] ) && ! empty( $p['response'][0]['name'] ) ) {
 			$player_name = (string) $p['response'][0]['name'];
+			error_log( '[BANS][API] Player name=' . $player_name );
+		} else {
+			error_log( '[BANS][API] Unable to resolve player name for id=' . $player_id );
 		}
 
 		$t = self::get( '/teams', array( 'id' => $team_id ) );
 		if ( empty( $t['errors'] ) && ! empty( $t['response'][0]['name'] ) ) {
 			$team_name = (string) $t['response'][0]['name'];
+			error_log( '[BANS][API] Team name=' . $team_name );
+		} else {
+			error_log( '[BANS][API] Unable to resolve team name for id=' . $team_id );
 		}
 
 		// 2) Prefer player-only query over last ~72h (today, yesterday, two days ago in site timezone).
@@ -120,6 +139,7 @@ class BANS_API {
 		for ( $i = 0; $i < 3; $i++ ) {
 			$date = $now->modify( '-' . $i . ' days' )->format( 'Y-m-d' );
 
+			error_log( '[BANS][API] Try player-only stats date=' . $date );
 			$statsByPlayerDate = self::get(
 				'/statistics/players',
 				array(
@@ -128,7 +148,20 @@ class BANS_API {
 				)
 			);
 
+			// Fallback to alternative endpoint naming if empty/errors.
+			if ( ! empty( $statsByPlayerDate['errors'] ) || empty( $statsByPlayerDate['response'] ) ) {
+				error_log( '[BANS][API] Empty or error on /statistics/players, trying /players/statistics for date=' . $date );
+				$statsByPlayerDate = self::get(
+					'/players/statistics',
+					array(
+						'player' => $player_id,
+						'date'   => $date,
+					)
+				);
+			}
+
 			if ( empty( $statsByPlayerDate['errors'] ) && ! empty( $statsByPlayerDate['response'] ) && is_array( $statsByPlayerDate['response'] ) ) {
+				error_log( '[BANS][API] Found ' . count( $statsByPlayerDate['response'] ) . ' rows for player/date' );
 				foreach ( $statsByPlayerDate['response'] as $row ) {
 					$ts = self::extract_game_timestamp( $row, $tz );
 					// Fallback to end-of-day for the queried date if no timestamp exists.
@@ -138,6 +171,8 @@ class BANS_API {
 							$ts = $eod->getTimestamp();
 						}
 					}
+					$gid = isset( $row['game']['id'] ) ? (int) $row['game']['id'] : 0;
+					error_log( '[BANS][API] Candidate row ts=' . $ts . ' game_id=' . $gid );
 					if ( $ts > $best_ts ) {
 						$best_ts  = $ts;
 						$best_row = $row;
@@ -147,6 +182,7 @@ class BANS_API {
 		}
 
 		if ( ! empty( $best_row ) ) {
+			error_log( '[BANS][API] Using best player-only row ts=' . $best_ts );
 			$stat_row = $best_row;
 
 			// Extract best-effort team and game info.
@@ -179,6 +215,7 @@ class BANS_API {
 				$player_name_from_stats = (string) $stat_row['player']['name'];
 			}
 
+			error_log( '[BANS][API] Resolved via player-only path: game_id=' . $game_id );
 			return array(
 				'player_name' => $player_name_from_stats ? $player_name_from_stats : $player_name,
 				'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
@@ -196,6 +233,7 @@ class BANS_API {
 		for ( $i = 0; $i < $days; $i++ ) {
 			$date = $now->modify( '-' . $i . ' days' )->format( 'Y-m-d' );
 
+			error_log( '[BANS][API] Team-scan date=' . $date );
 			$games = self::get(
 				'/games',
 				array(
@@ -205,6 +243,7 @@ class BANS_API {
 			);
 
 			if ( ! empty( $games['errors'] ) || empty( $games['response'] ) || ! is_array( $games['response'] ) ) {
+				error_log( '[BANS][API] No games found for team/date' );
 				continue;
 			}
 
@@ -222,6 +261,7 @@ class BANS_API {
 
 				if ( $finished ) {
 					$game = $g;
+					error_log( '[BANS][API] Selected finished game id=' . ( isset( $g['id'] ) ? (int) $g['id'] : 0 ) );
 					break 2;
 				}
 			}
@@ -229,11 +269,13 @@ class BANS_API {
 			// If none marked finished, still accept the first game result as fallback.
 			if ( empty( $game ) && ! empty( $games['response'][0] ) ) {
 				$game = $games['response'][0];
+				error_log( '[BANS][API] Selected fallback game id=' . ( isset( $game['id'] ) ? (int) $game['id'] : 0 ) );
 				break;
 			}
 		}
 
 		if ( empty( $game ) || empty( $game['id'] ) ) {
+			error_log( '[BANS][API] No recent game found for team in lookback window.' );
 			return array(
 				'player_name' => $player_name,
 				'team_name'   => $team_name,
@@ -243,43 +285,11 @@ class BANS_API {
 
 		$game_id = (int) $game['id'];
 
-		// 3) Fetch player statistics for that game.
-		// The docs indicate a “players statistics” endpoint exists; parameters can differ by version.
-		// We'll try the common pattern: game + player, else game only and filter.
-		$stats = self::get(
-			'/statistics/players',
-			array(
-				'id'   => $game_id,
-				'player' => $player_id,
-			)
-		);
-
-		$stat_row = null;
-
-		if ( empty( $stats['errors'] ) && ! empty( $stats['response'] ) && is_array( $stats['response'] ) ) {
-			// If endpoint returns a list, grab first.
-			$stat_row = $stats['response'][0];
-		} else {
-			// Fallback: try without player param, then filter.
-			$stats2 = self::get(
-				'/statistics/players',
-				array(
-					'id' => $game_id,
-				)
-			);
-
-			if ( empty( $stats2['errors'] ) && ! empty( $stats2['response'] ) && is_array( $stats2['response'] ) ) {
-				foreach ( $stats2['response'] as $row ) {
-					$pid = isset( $row['player']['id'] ) ? (int) $row['player']['id'] : 0;
-					if ( $pid === $player_id ) {
-						$stat_row = $row;
-						break;
-					}
-				}
-			}
-		}
+		// 3) Fetch player statistics for that game using resilient endpoint attempts.
+		$stat_row = self::get_player_stats_for_game( $game_id, $player_id );
 
 		if ( empty( $stat_row ) ) {
+			error_log( '[BANS][API] No stats returned for player/game. player_id=' . $player_id . ' game_id=' . $game_id );
 			return array(
 				'player_name' => $player_name,
 				'team_name'   => $team_name,
@@ -320,6 +330,77 @@ class BANS_API {
 			'stats'       => $stat_blob,
 			'errors'      => array(),
 		);
+	}
+
+	/**
+	 * Try multiple endpoints/param shapes to fetch player stats for a specific game.
+	 *
+	 * @param int $game_id
+	 * @param int $player_id
+	 * @return array|null
+	 */
+	private static function get_player_stats_for_game( $game_id, $player_id ) {
+		// Attempt 1: '/statistics/players' with id + player
+		error_log( '[BANS][API] Try /statistics/players id+player game_id=' . $game_id . ' player_id=' . $player_id );
+		$stats = self::get(
+			'/statistics/players',
+			array(
+				'id'     => $game_id,
+				'player' => $player_id,
+			)
+		);
+		if ( empty( $stats['errors'] ) && ! empty( $stats['response'][0] ) ) {
+			return $stats['response'][0];
+		}
+
+		// Attempt 2: '/players/statistics' with game + player
+		error_log( '[BANS][API] Try /players/statistics game+player' );
+		$stats = self::get(
+			'/players/statistics',
+			array(
+				'game'   => $game_id,
+				'player' => $player_id,
+			)
+		);
+		if ( empty( $stats['errors'] ) && ! empty( $stats['response'][0] ) ) {
+			return $stats['response'][0];
+		}
+
+		// Attempt 3: '/players/statistics' with game only, then filter by player
+		error_log( '[BANS][API] Try /players/statistics game-only then filter' );
+		$stats = self::get(
+			'/players/statistics',
+			array(
+				'game' => $game_id,
+			)
+		);
+		if ( empty( $stats['errors'] ) && ! empty( $stats['response'] ) && is_array( $stats['response'] ) ) {
+			foreach ( $stats['response'] as $row ) {
+				$pid = isset( $row['player']['id'] ) ? (int) $row['player']['id'] : 0;
+				if ( $pid === (int) $player_id ) {
+					return $row;
+				}
+			}
+		}
+
+		// Attempt 4: '/statistics/players' with id only, then filter
+		error_log( '[BANS][API] Try /statistics/players id-only then filter' );
+		$stats = self::get(
+			'/statistics/players',
+			array(
+				'id' => $game_id,
+			)
+		);
+		if ( empty( $stats['errors'] ) && ! empty( $stats['response'] ) && is_array( $stats['response'] ) ) {
+			foreach ( $stats['response'] as $row ) {
+				$pid = isset( $row['player']['id'] ) ? (int) $row['player']['id'] : 0;
+				if ( $pid === (int) $player_id ) {
+					return $row;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**

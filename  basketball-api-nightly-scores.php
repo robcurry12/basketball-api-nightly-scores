@@ -2,13 +2,13 @@
 /**
  * Plugin Name: Basketball API Nightly Scores (CSV Email)
  * Description: Nightly 2am ET cron pulls most recent player game stats from API-Basketball and emails a CSV report.
- * Version: 1.0.0
+ * Version: 1.0.6
  * Author: Rob Curry
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'BANS_PLUGIN_VERSION', '1.0.5' );
+define( 'BANS_PLUGIN_VERSION', '1.0.6' );
 define( 'BANS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BANS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 

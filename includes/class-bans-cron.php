@@ -84,9 +84,11 @@ class BANS_Cron {
 		$players  = isset( $settings['players'] ) && is_array( $settings['players'] ) ? $settings['players'] : array();
 
 		if ( empty( $players ) ) {
+			error_log('[BANS] No players configured; aborting.');
 			return;
 		}
 
+		error_log('[BANS] Starting CSV build for ' . count($players) . ' configured player rows');
 		$rows   = array();
 		$errors = array();
 
@@ -96,12 +98,15 @@ class BANS_Cron {
 			$label     = isset( $row['label'] ) ? (string) $row['label'] : '';
 
 			if ( $team_id <= 0 || $player_id <= 0 ) {
+				error_log('[BANS] Skipping invalid row label="' . $label . '" team_id=' . $team_id . ' player_id=' . $player_id );
 				continue;
 			}
 
+			error_log('[BANS] Fetching stats for label="' . $label . '" team_id=' . $team_id . ' player_id=' . $player_id );
 			$result = BANS_API::get_player_most_recent_stats( $team_id, $player_id );
 
 			if ( ! empty( $result['errors'] ) ) {
+				error_log('[BANS] Error for player_id=' . $player_id . ': ' . implode(' | ', (array) $result['errors']));
 				$errors[] = array(
 					'label'      => $label,
 					'team_id'    => $team_id,
@@ -134,9 +139,11 @@ class BANS_Cron {
 				'tpm'         => self::pick_stat( $stats, array( 'tpm', '3pm' ) ),
 				'tpa'         => self::pick_stat( $stats, array( 'tpa', '3pa' ) ),
 			);
+			error_log('[BANS] Row added for player_id=' . $player_id . ' game_id=' . ( isset( $result['game_id'] ) ? (int) $result['game_id'] : 0 ) );
 		}
 
 		if ( empty( $rows ) && empty( $errors ) ) {
+			error_log('[BANS] No rows or errors produced; nothing to send.');
 			return;
 		}
 
@@ -159,7 +166,7 @@ class BANS_Cron {
 		$headers = array( 'Content-Type: text/plain; charset=UTF-8' );
 
         $sent = wp_mail( $to, $subject, $body, $headers, array( $filepath ) );
-        error_log('[BANS] wp_mail sent (with attachment): ' . ( $sent ? 'true' : 'false' ));
+        error_log('[BANS] Email to=[' . implode(', ', $to) . '] sent=' . ( $sent ? 'true' : 'false' ) . ' rows=' . count($rows) . ' errors=' . count($errors) . ' file=' . $filepath );
 
 
 		// Optional cleanup: keep last N days instead of deleting immediately.
