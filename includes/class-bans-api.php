@@ -87,11 +87,16 @@ class BANS_API {
 	/**
 	 * Attempt to fetch a player's "most recent finished game" stats.
 	 *
-	 * Preferred strategy (team-agnostic, last ~72h by calendar days):
-	 * - Try fetching statistics by player + date for today, yesterday, and two days ago
-	 * - If found, return the first stats row
+	 * Preferred strategy (season-based, last 48h filter):
+	 * - Compute season(s) based on current month (e.g. "2024-2025" or "2025")
+	 * - Query '/games/statistics/players' with player + season; if nothing, try '/players/statistics'
+	 * - From the returned rows, pick the most recent game that occurred within the last 48 hours
 	 *
-	 * Fallback strategy (legacy, team-scoped):
+	 * Secondary strategy (team-agnostic, last ~72h by calendar days):
+	 * - Try fetching statistics by player + date for today, yesterday, two days ago
+	 * - Choose the most recent result by timestamp
+	 *
+	 * Fallback strategy (legacy, team-scoped search):
 	 * - Look back day-by-day up to N days
 	 * - Find the first finished game for the configured TEAM
 	 * - Then request player stats for that game
@@ -129,10 +134,95 @@ class BANS_API {
 			error_log( '[BANS][API] Unable to resolve team name for id=' . $team_id );
 		}
 
-		// 2) Prefer player-only query over last ~72h (today, yesterday, two days ago in site timezone).
+		// 2) Season-based query first: use '/games/statistics/players' with season(s), last 48h filter.
 		$tz  = wp_timezone();
 		$now = new DateTimeImmutable( 'now', $tz );
 
+		$seasons = self::compute_seasons_to_try( $now );
+		$cutoff  = $now->getTimestamp() - ( 48 * 3600 );
+
+		$best_row_season = null;
+		$best_ts_season  = 0;
+
+		foreach ( $seasons as $season ) {
+			error_log( '[BANS][API] Season scan player=' . $player_id . ' season=' . $season . ' via /games/statistics/players' );
+			$statsBySeason = self::get(
+				'/games/statistics/players',
+				array(
+					'player' => $player_id,
+					'season' => $season,
+				)
+			);
+
+			// If empty/errors, attempt alternative endpoint name.
+			if ( ! empty( $statsBySeason['errors'] ) || empty( $statsBySeason['response'] ) ) {
+				error_log( '[BANS][API] Empty/error on /games/statistics/players; trying /players/statistics season=' . $season );
+				$statsBySeason = self::get(
+					'/players/statistics',
+					array(
+						'player' => $player_id,
+						'season' => $season,
+					)
+				);
+			}
+
+			if ( empty( $statsBySeason['errors'] ) && ! empty( $statsBySeason['response'] ) && is_array( $statsBySeason['response'] ) ) {
+				foreach ( $statsBySeason['response'] as $row ) {
+					$ts = self::extract_game_timestamp( $row, $tz );
+					$gid = isset( $row['game']['id'] ) ? (int) $row['game']['id'] : 0;
+					error_log( '[BANS][API] Season row ts=' . $ts . ' cutoff=' . $cutoff . ' game_id=' . $gid );
+					if ( $ts > 0 && $ts >= $cutoff && $ts > $best_ts_season ) {
+						$best_ts_season  = $ts;
+						$best_row_season = $row;
+					}
+				}
+			}
+		}
+
+		if ( ! empty( $best_row_season ) ) {
+			error_log( '[BANS][API] Using season-based row ts=' . $best_ts_season . ' (within last 48h)' );
+			$stat_row = $best_row_season;
+
+			// Extract best-effort team and game info.
+			$team_name_from_stats = '';
+			if ( isset( $stat_row['team']['name'] ) ) {
+				$team_name_from_stats = (string) $stat_row['team']['name'];
+			}
+
+			$game_id = 0;
+			if ( isset( $stat_row['game']['id'] ) ) {
+				$game_id = (int) $stat_row['game']['id'];
+			} elseif ( isset( $stat_row['id'] ) ) {
+				$game_id = (int) $stat_row['id'];
+			}
+
+			// Normalize statistics payload.
+			$stat_blob = array();
+			if ( isset( $stat_row['statistics'] ) && is_array( $stat_row['statistics'] ) ) {
+				if ( isset( $stat_row['statistics'][0] ) && is_array( $stat_row['statistics'][0] ) ) {
+					$stat_blob = $stat_row['statistics'][0];
+				} else {
+					$stat_blob = $stat_row['statistics'];
+				}
+			} elseif ( isset( $stat_row['points'] ) || isset( $stat_row['rebounds'] ) ) {
+				$stat_blob = $stat_row;
+			}
+
+			$player_name_from_stats = '';
+			if ( isset( $stat_row['player']['name'] ) ) {
+				$player_name_from_stats = (string) $stat_row['player']['name'];
+			}
+
+			return array(
+				'player_name' => $player_name_from_stats ? $player_name_from_stats : $player_name,
+				'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
+				'game_id'     => $game_id,
+				'stats'       => $stat_blob,
+				'errors'      => array(),
+			);
+		}
+
+		// 3) Secondary: player-only query over last ~72h (today, yesterday, two days ago in site timezone).
 		$best_row = null;
 		$best_ts  = 0;
 
@@ -225,7 +315,7 @@ class BANS_API {
 			);
 		}
 
-		// 3) Fallback: Find most recent finished game for this team by scanning recent dates.
+		// 4) Fallback: Find most recent finished game for this team by scanning recent dates.
 		$days = 30;
 
 		$game = null;
@@ -427,5 +517,35 @@ class BANS_API {
 			return $ts ? (int) $ts : 0;
 		}
 		return 0;
+	}
+
+	/**
+	 * Compute season strings to try based on the current month.
+	 *
+	 * Rules:
+	 * - Oct-Dec: "Y-(Y+1)"
+	 * - Jan-Jun: "(Y-1)-Y"
+	 * - Otherwise: no hyphenated season, prefer current year only
+	 * Always include fallback to current year as a plain string (e.g. "2025").
+	 *
+	 * @param DateTimeImmutable $now
+	 * @return array List of season strings to try, in priority order
+	 */
+	private static function compute_seasons_to_try( DateTimeImmutable $now ) {
+		$y   = (int) $now->format( 'Y' );
+		$mon = (int) $now->format( 'n' ); // 1-12
+
+		$seasons = array();
+
+		if ( $mon >= 10 && $mon <= 12 ) {
+			$seasons[] = $y . '-' . ( $y + 1 );
+		} elseif ( $mon >= 1 && $mon <= 6 ) {
+			$seasons[] = ( $y - 1 ) . '-' . $y;
+		}
+
+		// Always include fallback to plain current year.
+		$seasons[] = (string) $y;
+
+		return $seasons;
 	}
 }
