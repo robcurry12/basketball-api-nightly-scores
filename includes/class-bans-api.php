@@ -8,7 +8,7 @@ class BANS_API {
 	private static function get( $endpoint, $params = array() ) {
 		$endpoint = '/' . ltrim( (string) $endpoint, '/' );
 
-		$api_key = get_option( 'bans_api_key', '' );
+		$api_key = get_option( 'bans_settings' )['api_key'];
 		$api_key = is_string( $api_key ) ? trim( $api_key ) : '';
 
 		if ( empty( $api_key ) ) {
