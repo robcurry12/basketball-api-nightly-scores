@@ -76,7 +76,11 @@ class BANS_API {
 	/**
 	 * Attempt to fetch a player's "most recent finished game" stats.
 	 *
-	 * Strategy (robust, avoids needing season config):
+	 * Preferred strategy (team-agnostic, last ~72h by calendar days):
+	 * - Try fetching statistics by player + date for today, yesterday, and two days ago
+	 * - If found, return the first stats row
+	 *
+	 * Fallback strategy (legacy, team-scoped):
 	 * - Look back day-by-day up to N days
 	 * - Find the first finished game for the configured TEAM
 	 * - Then request player stats for that game
@@ -106,9 +110,85 @@ class BANS_API {
 			$team_name = (string) $t['response'][0]['name'];
 		}
 
-		// 2) Find most recent finished game for this team by scanning recent dates.
-		$tz   = wp_timezone(); // should be set in WP settings; we schedule ET separately.
-		$now  = new DateTimeImmutable( 'now', $tz );
+		// 2) Prefer player-only query over last ~72h (today, yesterday, two days ago in site timezone).
+		$tz  = wp_timezone();
+		$now = new DateTimeImmutable( 'now', $tz );
+
+		$best_row = null;
+		$best_ts  = 0;
+
+		for ( $i = 0; $i < 3; $i++ ) {
+			$date = $now->modify( '-' . $i . ' days' )->format( 'Y-m-d' );
+
+			$statsByPlayerDate = self::get(
+				'/statistics/players',
+				array(
+					'player' => $player_id,
+					'date'   => $date,
+				)
+			);
+
+			if ( empty( $statsByPlayerDate['errors'] ) && ! empty( $statsByPlayerDate['response'] ) && is_array( $statsByPlayerDate['response'] ) ) {
+				foreach ( $statsByPlayerDate['response'] as $row ) {
+					$ts = self::extract_game_timestamp( $row, $tz );
+					// Fallback to end-of-day for the queried date if no timestamp exists.
+					if ( $ts <= 0 ) {
+						$eod = DateTimeImmutable::createFromFormat( 'Y-m-d H:i:s', $date . ' 23:59:59', $tz );
+						if ( $eod instanceof DateTimeImmutable ) {
+							$ts = $eod->getTimestamp();
+						}
+					}
+					if ( $ts > $best_ts ) {
+						$best_ts  = $ts;
+						$best_row = $row;
+					}
+				}
+			}
+		}
+
+		if ( ! empty( $best_row ) ) {
+			$stat_row = $best_row;
+
+			// Extract best-effort team and game info.
+			$team_name_from_stats = '';
+			if ( isset( $stat_row['team']['name'] ) ) {
+				$team_name_from_stats = (string) $stat_row['team']['name'];
+			}
+
+			$game_id = 0;
+			if ( isset( $stat_row['game']['id'] ) ) {
+				$game_id = (int) $stat_row['game']['id'];
+			} elseif ( isset( $stat_row['id'] ) ) {
+				$game_id = (int) $stat_row['id'];
+			}
+
+			// Normalize statistics payload.
+			$stat_blob = array();
+			if ( isset( $stat_row['statistics'] ) && is_array( $stat_row['statistics'] ) ) {
+				if ( isset( $stat_row['statistics'][0] ) && is_array( $stat_row['statistics'][0] ) ) {
+					$stat_blob = $stat_row['statistics'][0];
+				} else {
+					$stat_blob = $stat_row['statistics'];
+				}
+			} elseif ( isset( $stat_row['points'] ) || isset( $stat_row['rebounds'] ) ) {
+				$stat_blob = $stat_row;
+			}
+
+			$player_name_from_stats = '';
+			if ( isset( $stat_row['player']['name'] ) ) {
+				$player_name_from_stats = (string) $stat_row['player']['name'];
+			}
+
+			return array(
+				'player_name' => $player_name_from_stats ? $player_name_from_stats : $player_name,
+				'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
+				'game_id'     => $game_id,
+				'stats'       => $stat_blob,
+				'errors'      => array(),
+			);
+		}
+
+		// 3) Fallback: Find most recent finished game for this team by scanning recent dates.
 		$days = 30;
 
 		$game = null;
@@ -240,5 +320,31 @@ class BANS_API {
 			'stats'       => $stat_blob,
 			'errors'      => array(),
 		);
+	}
+
+	/**
+	 * Best-effort extraction of a game timestamp from a stats row.
+	 *
+	 * @param array            $row
+	 * @param DateTimeZone|mixed $tz
+	 * @return int Unix timestamp or 0 if unknown
+	 */
+	private static function extract_game_timestamp( $row, $tz ) {
+		// Common shapes
+		if ( isset( $row['game']['timestamp'] ) && is_numeric( $row['game']['timestamp'] ) ) {
+			return (int) $row['game']['timestamp'];
+		}
+		if ( isset( $row['game']['date'] ) && is_string( $row['game']['date'] ) ) {
+			$ts = strtotime( $row['game']['date'] );
+			return $ts ? (int) $ts : 0;
+		}
+		if ( isset( $row['timestamp'] ) && is_numeric( $row['timestamp'] ) ) {
+			return (int) $row['timestamp'];
+		}
+		if ( isset( $row['date'] ) && is_string( $row['date'] ) ) {
+			$ts = strtotime( $row['date'] );
+			return $ts ? (int) $ts : 0;
+		}
+		return 0;
 	}
 }

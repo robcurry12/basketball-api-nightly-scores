@@ -8,7 +8,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'BANS_PLUGIN_VERSION', '1.0.1' );
+define( 'BANS_PLUGIN_VERSION', '1.0.5' );
 define( 'BANS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BANS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
