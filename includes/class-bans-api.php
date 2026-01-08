@@ -152,17 +152,11 @@ class BANS_API {
 
 			// If empty/no results, attempt alternative endpoint name.
 			if ( $statsBySeason['results'] == 0 ) {
-				error_log( '[BANS][API] Empty/error on /games/statistics/players; trying /players/statistics season=' . $season );
-				$statsBySeason = self::get(
-					'/players/statistics',
-					array(
-						'player' => $player_id,
-						'season' => $season,
-					)
-				);
+				error_log( '[BANS][API] Empty/error on /games/statistics/players');
 			}
 
-			if ( empty( $statsBySeason['errors'] ) && ! empty( $statsBySeason['response'] ) && is_array( $statsBySeason['response'] ) ) {
+
+			if ( empty( $statsBySeason['errors'] ) && is_array( $statsBySeason['response'] && $statsBySeason['results'] > 0 ) ) {
 				$total = isset( $statsBySeason['results'] ) ? (int) $statsBySeason['results'] : count( $statsBySeason['response'] );
 				$last_index = max( 0, $total - 1 );
 				$stat_row = $statsBySeason['response'][ $last_index ];
