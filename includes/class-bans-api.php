@@ -155,7 +155,7 @@ class BANS_API {
 			);
 
 			// If empty/errors, attempt alternative endpoint name.
-			if ( ! empty( $statsBySeason['errors'] ) || empty( $statsBySeason['response'] ) ) {
+			if ( $statsBySeason['results'] == 0 ) {
 				error_log( '[BANS][API] Empty/error on /games/statistics/players; trying /players/statistics season=' . $season );
 				$statsBySeason = self::get(
 					'/players/statistics',
