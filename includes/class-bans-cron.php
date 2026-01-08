@@ -22,11 +22,9 @@ class BANS_Cron {
 		self::schedule();
 	}
 
-    public static function run_manual( $email ) {
-		// Queue as an immediate single WP-Cron event to avoid admin request timeouts.
+	public static function run_manual( $email ) {
 		wp_schedule_single_event( time() + 1, self::HOOK, array( array( $email ) ) );
-    }
-    
+	}
 
 	private static function schedule() {
 		if ( wp_next_scheduled( self::HOOK ) ) {
@@ -45,11 +43,8 @@ class BANS_Cron {
 		}
 	}
 
-	/**
-	 * Next 2:00 AM in America/New_York, returned as UTC timestamp for WP-Cron.
-	 */
 	private static function next_2am_eastern_timestamp() {
-		$tz = new DateTimeZone( 'America/New_York' );
+		$tz  = new DateTimeZone( 'America/New_York' );
 		$now = new DateTimeImmutable( 'now', $tz );
 
 		$target = $now->setTime( 2, 0, 0 );
@@ -57,38 +52,33 @@ class BANS_Cron {
 			$target = $target->modify( '+1 day' );
 		}
 
-		// Convert to UTC timestamp.
 		return $target->setTimezone( new DateTimeZone( 'UTC' ) )->getTimestamp();
 	}
 
-    public static function run( $override_to = null ) {
-		error_log('[BANS] Cron run() fired at ' . gmdate('c'));
-
-		$to = null;
+	public static function run( $override_to = null ) {
+		error_log( '[BANS] Cron run() fired at ' . gmdate( 'c' ) );
 
 		if ( is_array( $override_to ) && ! empty( $override_to ) ) {
 			$to = array_map( 'trim', $override_to );
 		} else {
 			$settings = get_option( 'bans_settings', array() );
-			$to = isset( $settings['recipients'] )
+			$to       = isset( $settings['recipients'] )
 				? array_map( 'trim', explode( ',', $settings['recipients'] ) )
 				: array( get_option( 'admin_email' ) );
 		}
-    
-        self::run_with_override_email( $to );
-    }
-    
 
-	private static function run_with_override_email(array $to) {
+		self::run_with_override_email( $to );
+	}
+
+	private static function run_with_override_email( array $to ) {
 		$settings = get_option( 'bans_settings', array() );
 		$players  = isset( $settings['players'] ) && is_array( $settings['players'] ) ? $settings['players'] : array();
 
 		if ( empty( $players ) ) {
-			error_log('[BANS] No players configured; aborting.');
+			error_log( '[BANS] No players configured; aborting.' );
 			return;
 		}
 
-		error_log('[BANS] Starting CSV build for ' . count($players) . ' configured player rows');
 		$rows   = array();
 		$errors = array();
 
@@ -98,52 +88,57 @@ class BANS_Cron {
 			$label     = isset( $row['label'] ) ? (string) $row['label'] : '';
 
 			if ( $team_id <= 0 || $player_id <= 0 ) {
-				error_log('[BANS] Skipping invalid row label="' . $label . '" team_id=' . $team_id . ' player_id=' . $player_id );
 				continue;
 			}
 
-			error_log('[BANS] Fetching stats for label="' . $label . '" team_id=' . $team_id . ' player_id=' . $player_id );
 			$result = BANS_API::get_player_most_recent_stats( $team_id, $player_id );
 
 			if ( ! empty( $result['errors'] ) ) {
-				error_log('[BANS] Error for player_id=' . $player_id . ': ' . implode(' | ', (array) $result['errors']));
 				$errors[] = array(
-					'label'      => $label,
-					'team_id'    => $team_id,
-					'player_id'  => $player_id,
-					'errors'     => implode( ' | ', (array) $result['errors'] ),
+					'label'     => $label,
+					'team_id'   => $team_id,
+					'player_id' => $player_id,
+					'errors'    => implode( ' | ', (array) $result['errors'] ),
 				);
 				continue;
 			}
 
 			$stats = isset( $result['stats'] ) && is_array( $result['stats'] ) ? $result['stats'] : array();
 
-			// Normalize some common stat keys (best effort).
+			$rebounds_total = self::pick_rebounds_total( $stats );
+
+			$fg = self::pick_shooting_line( $stats, 'field_goals', 'fgm', 'fga' );
+			$tp = self::pick_shooting_line( $stats, 'threepoint_goals', 'tpm', 'tpa' );
+			$ft = self::pick_shooting_line( $stats, 'freethrows_goals', 'ftm', 'fta' );
+
+			// NOTE: Removed steals/blocks/turnovers.
 			$rows[] = array(
 				'player_name' => isset( $result['player_name'] ) ? $result['player_name'] : '',
 				'team_name'   => isset( $result['team_name'] ) ? $result['team_name'] : '',
 				'game_id'     => isset( $result['game_id'] ) ? (int) $result['game_id'] : 0,
 
 				'points'      => self::pick_stat( $stats, array( 'points', 'pts' ) ),
-				'rebounds'    => self::pick_stat( $stats, array( 'rebounds', 'reb' ) ),
+				'rebounds'    => $rebounds_total,
 				'assists'     => self::pick_stat( $stats, array( 'assists', 'ast' ) ),
-				'steals'      => self::pick_stat( $stats, array( 'steals', 'stl' ) ),
-				'blocks'      => self::pick_stat( $stats, array( 'blocks', 'blk' ) ),
-				'turnovers'   => self::pick_stat( $stats, array( 'turnovers', 'tov' ) ),
 				'minutes'     => self::pick_stat( $stats, array( 'min', 'minutes' ) ),
 
-				'fgm'         => self::pick_stat( $stats, array( 'fgm' ) ),
-				'fga'         => self::pick_stat( $stats, array( 'fga' ) ),
-				'ftm'         => self::pick_stat( $stats, array( 'ftm' ) ),
-				'fta'         => self::pick_stat( $stats, array( 'fta' ) ),
-				'tpm'         => self::pick_stat( $stats, array( 'tpm', '3pm' ) ),
-				'tpa'         => self::pick_stat( $stats, array( 'tpa', '3pa' ) ),
+				'fg'          => $fg['line'],
+				'fg_pct'      => $fg['pct'],
+				'3pt'         => $tp['line'],
+				'3pt_pct'     => $tp['pct'],
+				'ft'          => $ft['line'],
+				'ft_pct'      => $ft['pct'],
+
+				'fgm'         => $fg['made'],
+				'fga'         => $fg['att'],
+				'3pm'         => $tp['made'],
+				'3pa'         => $tp['att'],
+				'ftm'         => $ft['made'],
+				'fta'         => $ft['att'],
 			);
-			error_log('[BANS] Row added for player_id=' . $player_id . ' game_id=' . ( isset( $result['game_id'] ) ? (int) $result['game_id'] : 0 ) );
 		}
 
 		if ( empty( $rows ) && empty( $errors ) ) {
-			error_log('[BANS] No rows or errors produced; nothing to send.');
 			return;
 		}
 
@@ -160,17 +155,11 @@ class BANS_Cron {
 		$filename   = 'player-scores-' . gmdate( 'Y-m-d' ) . '.csv';
 		$filepath   = trailingslashit( $upload_dir['basedir'] ) . $filename;
 
-		// Write CSV to uploads for attachment.
 		file_put_contents( $filepath, $csv ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents
 
 		$headers = array( 'Content-Type: text/plain; charset=UTF-8' );
 
-        $sent = wp_mail( $to, $subject, $body, $headers, array( $filepath ) );
-        error_log('[BANS] Email to=[' . implode(', ', $to) . '] sent=' . ( $sent ? 'true' : 'false' ) . ' rows=' . count($rows) . ' errors=' . count($errors) . ' file=' . $filepath );
-
-
-		// Optional cleanup: keep last N days instead of deleting immediately.
-		// unlink( $filepath );
+		wp_mail( $to, $subject, $body, $headers, array( $filepath ) );
 	}
 
 	private static function pick_stat( $stats, $keys ) {
@@ -182,10 +171,83 @@ class BANS_Cron {
 		return '';
 	}
 
+	private static function pick_rebounds_total( $stats ) {
+		if ( ! is_array( $stats ) ) {
+			return '';
+		}
+
+		if ( isset( $stats['rebounds'] ) ) {
+			if ( is_array( $stats['rebounds'] ) && isset( $stats['rebounds']['total'] ) ) {
+				return is_scalar( $stats['rebounds']['total'] ) ? (string) $stats['rebounds']['total'] : '';
+			}
+			if ( is_scalar( $stats['rebounds'] ) ) {
+				return (string) $stats['rebounds'];
+			}
+		}
+
+		if ( isset( $stats['reb'] ) && is_scalar( $stats['reb'] ) ) {
+			return (string) $stats['reb'];
+		}
+
+		return '';
+	}
+
+	private static function pick_shooting_line( $stats, $group_key, $made_key, $att_key ) {
+		$made = '';
+		$att  = '';
+		$pct  = '';
+
+		if ( isset( $stats[ $made_key ] ) && is_scalar( $stats[ $made_key ] ) ) {
+			$made = (string) $stats[ $made_key ];
+		}
+		if ( isset( $stats[ $att_key ] ) && is_scalar( $stats[ $att_key ] ) ) {
+			$att = (string) $stats[ $att_key ];
+		}
+
+		if ( isset( $stats[ $group_key ] ) && is_array( $stats[ $group_key ] ) ) {
+			$g = $stats[ $group_key ];
+
+			if ( '' === $made && isset( $g['total'] ) && is_scalar( $g['total'] ) ) {
+				$made = (string) $g['total'];
+			}
+			if ( '' === $att && isset( $g['attempts'] ) && is_scalar( $g['attempts'] ) ) {
+				$att = (string) $g['attempts'];
+			}
+
+			if ( isset( $g['percentage'] ) && is_scalar( $g['percentage'] ) && '' !== (string) $g['percentage'] ) {
+				$pct = (string) $g['percentage'];
+			}
+		}
+
+		$line = '';
+		if ( '' !== $made && '' !== $att ) {
+			$line = $made . '/' . $att;
+		}
+
+		if ( '' === $pct && '' !== $made && '' !== $att ) {
+			$m = (float) $made;
+			$a = (float) $att;
+			if ( $a > 0 ) {
+				$pct = (string) round( ( $m / $a ) * 100, 1 );
+			}
+		}
+
+		if ( '' !== $pct ) {
+			$pct = rtrim( $pct, '%' ) . '%';
+		}
+
+		return array(
+			'made' => $made,
+			'att'  => $att,
+			'line' => $line,
+			'pct'  => $pct,
+		);
+	}
+
 	private static function build_csv( $rows, $errors ) {
 		$fh = fopen( 'php://temp', 'r+' );
 
-		// Main report.
+		// Human-readable headers (labels).
 		fputcsv(
 			$fh,
 			array(
@@ -206,8 +268,8 @@ class BANS_Cron {
 
 				'FGM',
 				'FGA',
-				'3PM',
-				'3PA',
+				'3 Points Made',
+				'3 Points Attempt',
 				'FTM',
 				'FTA',
 			)
@@ -242,11 +304,11 @@ class BANS_Cron {
 				)
 			);
 		}
-		// Errors section.
+
 		if ( ! empty( $errors ) ) {
 			fputcsv( $fh, array() );
 			fputcsv( $fh, array( 'ERRORS' ) );
-			fputcsv( $fh, array( 'label', 'team_id', 'player_id', 'error' ) );
+			fputcsv( $fh, array( 'Label', 'Team ID', 'Player ID', 'Error' ) );
 
 			foreach ( $errors as $e ) {
 				fputcsv(
