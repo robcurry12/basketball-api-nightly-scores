@@ -1,414 +1,79 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-class BANS_API {
+class BANS_Cron {
 
-	const BASE_URL = 'https://v1.basketball.api-sports.io';
+	public static function init() {
+		add_action( 'bans_nightly_event', array( __CLASS__, 'nightly' ) );
 
-	private static function get( $endpoint, $params = array() ) {
-		$endpoint = '/' . ltrim( (string) $endpoint, '/' );
-
-		$api_key = get_option( 'bans_settings' )['api_key'];
-		$api_key = is_string( $api_key ) ? trim( $api_key ) : '';
-
-		if ( empty( $api_key ) ) {
-			error_log( '[BANS][API] Missing API key option bans_api_key.' );
-			return array(
-				'errors' => array( 'Missing API key.' ),
-			);
+		if ( ! wp_next_scheduled( 'bans_nightly_event' ) ) {
+			wp_schedule_event( strtotime( '02:00 tomorrow' ), 'daily', 'bans_nightly_event' );
 		}
-
-		$url = self::BASE_URL . $endpoint;
-
-		if ( ! empty( $params ) && is_array( $params ) ) {
-			$url = add_query_arg( $params, $url );
-		}
-
-		$args = array(
-			'timeout' => 15,
-			'headers' => array(
-				'x-apisports-key' => $api_key,
-			),
-		);
-
-		error_log( '[BANS][API] GET ' . $url );
-
-		$response = wp_remote_get( $url, $args );
-
-		if ( is_wp_error( $response ) ) {
-			error_log( '[BANS][API] WP_Error: ' . $response->get_error_message() );
-			return array(
-				'errors' => array( $response->get_error_message() ),
-			);
-		}
-
-		$code = (int) wp_remote_retrieve_response_code( $response );
-		$body = wp_remote_retrieve_body( $response );
-
-		if ( $code < 200 || $code >= 300 ) {
-			error_log( '[BANS][API] Non-2xx response code=' . $code . ' body=' . substr( (string) $body, 0, 500 ) );
-			return array(
-				'errors' => array( 'Non-2xx response code: ' . $code ),
-			);
-		}
-
-		$data = json_decode( (string) $body, true );
-
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			error_log( '[BANS][API] Invalid JSON for ' . $endpoint );
-			return array(
-				'errors' => array( 'Invalid JSON response.' ),
-			);
-		}
-
-		$count = isset( $data['response'] ) && is_array( $data['response'] ) ? count( $data['response'] ) : 0;
-		error_log( '[BANS][API] OK ' . $endpoint . ' items=' . $count );
-		return $data;
 	}
 
-	public static function get_player_most_recent_stats( $team_id, $player_id ) {
-		$team_id   = (int) $team_id;
-		$player_id = (int) $player_id;
+	public static function nightly() {
+		$settings = BANS_Admin::get_settings();
+		self::execute( $settings, false );
+	}
 
-		error_log( '[BANS][API] Start stats resolution team_id=' . $team_id . ' player_id=' . $player_id );
+	public static function execute( $settings, $is_test = false ) {
+		$rows = array();
 
-		$player_name = '';
-		$team_name   = '';
+		foreach ( $settings['players'] as $player ) {
+			$script = BANS_PLUGIN_DIR . 'scraper/flashscore-cli.mjs';
 
-		$p = self::get( '/players', array( 'id' => $player_id ) );
-		if ( empty( $p['errors'] ) && ! empty( $p['response'][0]['name'] ) ) {
-			$player_name = (string) $p['response'][0]['name'];
-			error_log( '[BANS][API] Player name=' . $player_name );
-		} else {
-			error_log( '[BANS][API] Unable to resolve player name for id=' . $player_id );
-		}
+			$cmd = escapeshellcmd( $settings['node_path'] ) . ' ' .
+				escapeshellarg( $script ) . ' ' .
+				escapeshellarg( $player['flashscore_slug'] ) . ' ' .
+				escapeshellarg( $player['flashscore_id'] );
 
-		$t = self::get( '/teams', array( 'id' => $team_id ) );
-		if ( empty( $t['errors'] ) && ! empty( $t['response'][0]['name'] ) ) {
-			$team_name = (string) $t['response'][0]['name'];
-			error_log( '[BANS][API] Team name=' . $team_name );
-		} else {
-			error_log( '[BANS][API] Unable to resolve team name for id=' . $team_id );
-		}
-
-		// 2) Season-based query first: use '/games/statistics/players' with season(s), last 48h filter.
-		$tz  = wp_timezone();
-		$now = new DateTimeImmutable( 'now', $tz );
-
-		$seasons = self::compute_seasons_to_try( $now );
-
-		foreach ( $seasons as $season ) {
-			error_log( '[BANS][API] Season scan player=' . $player_id . ' season=' . $season . ' via /games/statistics/players' );
-			$statsBySeason = self::get(
-				'/games/statistics/players',
-				array(
-					'player' => $player_id,
-					'season' => $season,
-				)
+			$descriptors = array(
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
 			);
 
-			if ( $statsBySeason['results'] == 0 ) {
-				error_log( '[BANS][API] Empty/error on /games/statistics/players');
-			}
+			$process = proc_open( $cmd, $descriptors, $pipes );
+			$output  = stream_get_contents( $pipes[1] );
+			proc_close( $process );
 
-			// FIXED: correct validation of response array and results.
-			if (
-				empty( $statsBySeason['errors'] )
-				&& ! empty( $statsBySeason['response'] )
-				&& is_array( $statsBySeason['response'] )
-				&& (int) $statsBySeason['results'] > 0
-			) {
-				$rows = array_values( (array) $statsBySeason['response'] );
+			$data = json_decode( $output, true );
 
-				// Prefer rows matching the configured team_id, but still choose the LAST row.
-				$team_rows = array();
-
-				foreach ( $rows as $row ) {
-					if ( ! is_array( $row ) || empty( $row['game']['id'] ) ) {
-						continue;
-					}
-
-					if ( isset( $row['team']['id'] ) && (int) $row['team']['id'] === (int) $team_id ) {
-						$team_rows[] = $row;
-					}
-				}
-
-				// If we found team-specific rows, use them; otherwise use all rows.
-				$chosen_set = ! empty( $team_rows ) ? array_values( $team_rows ) : $rows;
-
-				// Defensive: make sure we actually have something before indexing.
-				if ( empty( $chosen_set ) ) {
-					error_log( '[BANS][API] No usable rows after filtering for season=' . $season );
-					continue;
-				}
-
-				$stat_row = $chosen_set[ count( $chosen_set ) - 1 ];
-
-				$gid = isset( $stat_row['game']['id'] ) ? (int) $stat_row['game']['id'] : 0;
-				error_log(
-					'[BANS][API] Using LAST row in response game_id=' . $gid .
-					' (season=' . $season . ', team_filtered=' . ( ! empty( $team_rows ) ? '1' : '0' ) . ')'
-				);
-
-
-				// Extract best-effort team and game info.
-				$team_name_from_stats = '';
-				if ( isset( $stat_row['team']['name'] ) ) {
-					$team_name_from_stats = (string) $stat_row['team']['name'];
-				}
-
-				$game_id = 0;
-				if ( isset( $stat_row['game']['id'] ) ) {
-					$game_id = (int) $stat_row['game']['id'];
-				} elseif ( isset( $stat_row['id'] ) ) {
-					$game_id = (int) $stat_row['id'];
-				}
-
-				// Normalize statistics payload.
-				$stat_blob = array();
-				if ( isset( $stat_row['statistics'] ) && is_array( $stat_row['statistics'] ) ) {
-					if ( isset( $stat_row['statistics'][0] ) && is_array( $stat_row['statistics'][0] ) ) {
-						$stat_blob = $stat_row['statistics'][0];
-					} else {
-						$stat_blob = $stat_row['statistics'];
-					}
-				} else {
-					// In many API-Basketball responses for /games/statistics/players, stats are top-level.
-					$stat_blob = $stat_row;
-				}
-
-				return array(
-					'player_name' => $player_name,
-					'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
-					'game_id'     => $game_id,
-					'stats'       => $stat_blob,
-					'errors'      => array(),
-				);
-			}
-		}
-
-		// No season-based results; continue to secondary strategy.
-
-		// 3) Secondary: player-only query over last ~72h (today, yesterday, two days ago in site timezone).
-		$best_row = null;
-		$best_ts  = 0;
-
-		for ( $i = 0; $i < 3; $i++ ) {
-			$date = $now->modify( '-' . $i . ' days' )->format( 'Y-m-d' );
-
-			error_log( '[BANS][API] Try player-only stats date=' . $date );
-			$statsByPlayerDate = self::get(
-				'/statistics/players',
-				array(
-					'player' => $player_id,
-					'date'   => $date,
-				)
-			);
-
-			// Fallback to alternative endpoint naming if empty/errors.
-			if ( ! empty( $statsByPlayerDate['errors'] ) || empty( $statsByPlayerDate['response'] ) ) {
-				error_log( '[BANS][API] Empty or error on /statistics/players, trying /players/statistics for date=' . $date );
-				$statsByPlayerDate = self::get(
-					'/players/statistics',
-					array(
-						'id'   => $player_id,
-						'date' => $date,
-					)
-				);
-			}
-
-			if ( empty( $statsByPlayerDate['errors'] ) && ! empty( $statsByPlayerDate['response'] ) && is_array( $statsByPlayerDate['response'] ) ) {
-				foreach ( $statsByPlayerDate['response'] as $row ) {
-					$ts = self::extract_game_timestamp( $row, $tz );
-					if ( $ts > $best_ts ) {
-						$best_ts  = $ts;
-						$best_row = $row;
-					}
-				}
-			}
-		}
-
-		if ( ! empty( $best_row ) ) {
-			error_log( '[BANS][API] Using best player-only row ts=' . $best_ts );
-			$stat_row = $best_row;
-
-			$team_name_from_stats = '';
-			if ( isset( $stat_row['team']['name'] ) ) {
-				$team_name_from_stats = (string) $stat_row['team']['name'];
-			}
-
-			$game_id = 0;
-			if ( isset( $stat_row['game']['id'] ) ) {
-				$game_id = (int) $stat_row['game']['id'];
-			} elseif ( isset( $stat_row['id'] ) ) {
-				$game_id = (int) $stat_row['id'];
-			}
-
-			$stat_blob = array();
-			if ( isset( $stat_row['statistics'] ) && is_array( $stat_row['statistics'] ) ) {
-				if ( isset( $stat_row['statistics'][0] ) && is_array( $stat_row['statistics'][0] ) ) {
-					$stat_blob = $stat_row['statistics'][0];
-				} else {
-					$stat_blob = $stat_row['statistics'];
-				}
-			} else {
-				$stat_blob = $stat_row;
-			}
-
-			return array(
-				'player_name' => $player_name,
-				'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
-				'game_id'     => $game_id,
-				'stats'       => $stat_blob,
-				'errors'      => array(),
-			);
-		}
-
-		// 4) Final fallback: scan team games for last 30 days and fetch player stats per finished game.
-		error_log( '[BANS][API] Fallback to team game scan last 30 days.' );
-
-		for ( $d = 0; $d < 30; $d++ ) {
-			$date = $now->modify( '-' . $d . ' days' )->format( 'Y-m-d' );
-
-			$games = self::get(
-				'/games',
-				array(
-					'team' => $team_id,
-					'date' => $date,
-				)
-			);
-
-			if ( ! empty( $games['errors'] ) || empty( $games['response'] ) ) {
+			if ( empty( $data['ok'] ) || ! empty( $data['ignored'] ) ) {
 				continue;
 			}
 
-			foreach ( (array) $games['response'] as $game ) {
-				$game_id = isset( $game['id'] ) ? (int) $game['id'] : 0;
-				if ( $game_id <= 0 ) {
-					continue;
-				}
-
-				// Only consider finished games, if status is available.
-				if ( isset( $game['status']['short'] ) ) {
-					$short = (string) $game['status']['short'];
-					if ( 'FT' !== $short && 'AOT' !== $short ) {
-						continue;
-					}
-				}
-
-				$stats = self::get(
-					'/games/statistics/players',
-					array(
-						'game'   => $game_id,
-						'player' => $player_id,
-					)
-				);
-
-				if ( ! empty( $stats['errors'] ) || empty( $stats['response'] ) ) {
-					$stats = self::get(
-						'/statistics/players',
-						array(
-							'game'   => $game_id,
-							'player' => $player_id,
-						)
-					);
-				}
-
-				if ( empty( $stats['errors'] ) && ! empty( $stats['response'] ) && is_array( $stats['response'] ) ) {
-					$stat_row = $stats['response'][0];
-
-					$team_name_from_stats = '';
-					if ( isset( $stat_row['team']['name'] ) ) {
-						$team_name_from_stats = (string) $stat_row['team']['name'];
-					}
-
-					$stat_blob = array();
-					if ( isset( $stat_row['statistics'] ) && is_array( $stat_row['statistics'] ) ) {
-						if ( isset( $stat_row['statistics'][0] ) && is_array( $stat_row['statistics'][0] ) ) {
-							$stat_blob = $stat_row['statistics'][0];
-						} else {
-							$stat_blob = $stat_row['statistics'];
-						}
-					} else {
-						$stat_blob = $stat_row;
-					}
-
-					return array(
-						'player_name' => $player_name,
-						'team_name'   => $team_name_from_stats ? $team_name_from_stats : $team_name,
-						'game_id'     => $game_id,
-						'stats'       => $stat_blob,
-						'errors'      => array(),
-					);
-				}
-			}
-		}
-
-		error_log( '[BANS][API] No stats found for player_id=' . $player_id . ' team_id=' . $team_id );
-		return array(
-			'player_name' => $player_name,
-			'team_name'   => $team_name,
-			'game_id'     => 0,
-			'stats'       => array(),
-			'errors'      => array( 'No recent stats found within lookback.' ),
-		);
-	}
-
-	private static function compute_seasons_to_try( DateTimeImmutable $now ) {
-		$year  = (int) $now->format( 'Y' );
-		$month = (int) $now->format( 'n' );
-
-		if ( $month >= 1 && $month <= 6 ) {
-			$prev = $year - 1;
-
-			return array(
-				$prev . '-' . $year,
-				(string) $prev,
-				(string) $year,
+			$rows[] = array_merge(
+				array( 'Player' => $player['label'] ),
+				$data['stats']
 			);
 		}
 
-		$next = $year + 1;
-		return array(
-			$year . '-' . $next,
-			(string) $year,
-			(string) $next,
+		if ( empty( $rows ) ) {
+			return;
+		}
+
+		$to = $is_test
+			? array( $settings['test_email'] )
+			: array_map( 'trim', explode( ',', $settings['emails'] ) );
+
+		wp_mail(
+			$to,
+			'Basketball Nightly Stats',
+			self::format_email( $rows )
 		);
 	}
 
-	private static function extract_game_timestamp( $row, $tz ) {
-		if ( ! is_array( $row ) ) {
-			return 0;
+	private static function format_email( $rows ) {
+		$lines = array();
+
+		foreach ( $rows as $row ) {
+			$lines[] = implode( ' | ', array_map(
+				fn( $k, $v ) => "$k: $v",
+				array_keys( $row ),
+				$row
+			) );
 		}
 
-		$ts = 0;
-
-		if ( isset( $row['game']['timestamp'] ) ) {
-			$ts = (int) $row['game']['timestamp'];
-		} elseif ( isset( $row['timestamp'] ) ) {
-			$ts = (int) $row['timestamp'];
-		}
-
-		if ( $ts > 0 ) {
-			return $ts;
-		}
-
-		$date_str = '';
-		if ( isset( $row['game']['date'] ) ) {
-			$date_str = (string) $row['game']['date'];
-		} elseif ( isset( $row['date'] ) ) {
-			$date_str = (string) $row['date'];
-		}
-
-		if ( empty( $date_str ) ) {
-			return 0;
-		}
-
-		try {
-			$dt = new DateTimeImmutable( $date_str, $tz );
-			return (int) $dt->format( 'U' );
-		} catch ( Exception $e ) {
-			return 0;
-		}
+		return implode( "\n\n", $lines );
 	}
 }
