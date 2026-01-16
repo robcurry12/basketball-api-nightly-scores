@@ -4,7 +4,6 @@ defined( 'ABSPATH' ) || exit;
 class BANS_Cron {
 
 	public static function init() {
-		// Optional: keep a daily cron as a fallback that re-sends last push (if you want).
 		add_action( 'bans_nightly_event', array( __CLASS__, 'nightly_fallback' ) );
 
 		if ( ! wp_next_scheduled( 'bans_nightly_event' ) ) {
@@ -12,11 +11,6 @@ class BANS_Cron {
 		}
 	}
 
-	/**
-	 * Optional fallback: re-send the last pushed data.
-	 * This is useful if you want WP to always send at 2am even if GitHub pushes earlier.
-	 * If you don't want fallback sends, you can remove this cron entirely.
-	 */
 	public static function nightly_fallback() {
 		$settings = BANS_Admin::get_settings();
 		$last     = get_option( 'bans_last_push', array() );
@@ -29,15 +23,6 @@ class BANS_Cron {
 		self::send_email_with_csv( $settings, $rows, false );
 	}
 
-	/**
-	 * Send email with CSV attachment.
-	 *
-	 * @param array $settings Settings.
-	 * @param array $rows     Array of associative rows.
-	 * @param bool  $is_test  Whether this is a test email.
-	 *
-	 * @return bool
-	 */
 	public static function send_email_with_csv( $settings, $rows, $is_test = false ) {
 
 		$recipients = array();
@@ -56,6 +41,11 @@ class BANS_Cron {
 
 		if ( empty( $recipients ) ) {
 			error_log( '[BANS] No recipients configured. Email not sent.' );
+			return false;
+		}
+
+		if ( empty( $rows ) || ! is_array( $rows ) ) {
+			error_log( '[BANS] No rows provided. Email not sent.' );
 			return false;
 		}
 
@@ -82,9 +72,19 @@ class BANS_Cron {
 	}
 
 	private static function generate_csv( $rows ) {
-		$tmp = wp_tempnam( 'bans_stats.csv' );
-		$fh  = fopen( $tmp, 'w' );
+		$upload = wp_upload_dir();
+		$dir    = trailingslashit( $upload['basedir'] ) . 'bans';
 
+		if ( ! file_exists( $dir ) ) {
+			wp_mkdir_p( $dir );
+		}
+
+		$filename = 'bans-stats-' . gmdate( 'Y-m-d' ) . '.csv';
+		$path     = trailingslashit( $dir ) . $filename;
+
+		$fh = fopen( $path, 'w' );
+
+		// Header
 		fputcsv( $fh, array_keys( $rows[0] ) );
 
 		foreach ( $rows as $row ) {
@@ -92,13 +92,15 @@ class BANS_Cron {
 		}
 
 		fclose( $fh );
-		return $tmp;
+
+		return $path;
 	}
 
 	private static function format_email( $rows ) {
 		$lines = array();
 
 		foreach ( $rows as $row ) {
+			// Keep email concise; URLs are now cleaned and dates formatted.
 			$line = array();
 			foreach ( $row as $k => $v ) {
 				$line[] = "{$k}: {$v}";

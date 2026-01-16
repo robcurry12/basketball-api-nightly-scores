@@ -8,13 +8,34 @@ if (!PUSH_URL || !SECRET) {
   process.exit(1);
 }
 
-/**
- * Configure players here.
- * slug/id come from: https://www.flashscore.com/player/<slug>/<id>/
- */
-const players = [
-  { label: "Jaren Jackson Jr", slug: "jackson-jaren", id: "h8oYS0m9" },
-];
+const PLAYERS_URL =
+  process.env.BANS_PLAYERS_URL ||
+  PUSH_URL.replace(/\/push\/?$/, "/players");
+
+async function fetchPlayers() {
+  const res = await fetch(PLAYERS_URL, {
+    method: "GET",
+    headers: { "X-BANS-SECRET": SECRET },
+  });
+
+  const text = await res.text();
+  if (!res.ok) {
+    console.error("Players fetch failed:", res.status, text);
+    process.exit(1);
+  }
+
+  const data = JSON.parse(text);
+  if (!data.ok || !Array.isArray(data.players)) {
+    console.error("Players response invalid:", data);
+    process.exit(1);
+  }
+
+  return data.players.map((p) => ({
+    label: p.label,
+    slug: p.flashscore_slug,
+    id: p.flashscore_id,
+  }));
+}
 
 function parseFlashscoreDate(dateText) {
   const m = /^(\d{2})\.(\d{2})\.(\d{2})$/.exec(dateText);
@@ -55,7 +76,9 @@ async function scrapePlayer(page, player) {
   const url = `https://www.flashscore.com/player/${player.slug}/${player.id}/`;
 
   await page.goto(url, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector("#last-matches .lmTable a:first-of-type", { timeout: 30000 });
+  await page.waitForSelector("#last-matches .lmTable a:first-of-type", {
+    timeout: 30000,
+  });
 
   const raw = await page.evaluate(() => {
     const a = document.querySelector("#last-matches .lmTable a:first-of-type");
@@ -82,12 +105,15 @@ async function scrapePlayer(page, player) {
   const stats = mapIcons(raw.icons);
   if (!stats) return { ok: false, error: "Missing stats columns", raw };
 
+  const game_date = `${dateParts.yyyy}-${String(dateParts.mm).padStart(2, "0")}-${String(
+    dateParts.dd
+  ).padStart(2, "0")}`;
+
   return {
     ok: true,
     ignored: false,
     game: {
-      date_text: raw.dateText,
-      date_iso: `${dateParts.yyyy}-${String(dateParts.mm).padStart(2, "0")}-${String(dateParts.dd).padStart(2, "0")}`,
+      date_iso: game_date,
       url: raw.href,
     },
     stats,
@@ -95,6 +121,13 @@ async function scrapePlayer(page, player) {
 }
 
 async function main() {
+  const players = await fetchPlayers();
+
+  if (!players.length) {
+    console.log("No players returned from WP admin. Nothing to scrape.");
+    process.exit(0);
+  }
+
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     userAgent:
@@ -116,8 +149,8 @@ async function main() {
       if (r.ok && !r.ignored) {
         rows.push({
           player: p.label,
-          game_date: r.game.date_iso,
-          game_url: r.game.url,
+          game_date: r.game.date_iso, // WP will format to MM/DD/YYYY
+          game_url: r.game.url,       // WP will strip querystring
           ...r.stats,
         });
       }
