@@ -2,9 +2,8 @@ name: BANS Nightly Scrape
 
 on:
   schedule:
-    # 2:00 AM America/New_York = 07:00 UTC (standard time)
-    # Note: GitHub schedules are UTC. Adjust if you want DST-perfect timing.
-    - cron: "0 7 * * *"
+    # Run hourly (UTC). We gate execution so the job only proceeds at 2:00 AM America/New_York.
+    - cron: "0 * * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -15,17 +14,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Only run at 2am ET
+        shell: bash
+        run: |
+          HOUR=$(TZ="America/New_York" date +'%H')
+          MIN=$(TZ="America/New_York" date +'%M')
+          if [ "$HOUR" != "02" ] || [ "$MIN" != "00" ]; then
+            echo "Not 2:00am ET (it is $HOUR:$MIN ET). Exiting."
+            exit 0
+          fi
+          echo "It is 2:00am ET. Continuing."
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
       - name: Install deps
+        shell: bash
         run: |
           npm ci || npm install
           npx playwright install --with-deps chromium
 
       - name: Run scraper and push to WordPress
+        shell: bash
         env:
           BANS_PUSH_URL: ${{ secrets.BANS_PUSH_URL }}
           BANS_SECRET: ${{ secrets.BANS_SECRET }}
