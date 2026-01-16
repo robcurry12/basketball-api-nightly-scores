@@ -1,111 +1,111 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-class BANS_REST {
-
-	const ROUTE_NS = 'bans/v1';
+class BANS_Cron {
 
 	public static function init() {
-		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
+		// Optional: keep a daily cron as a fallback that re-sends last push (if you want).
+		add_action( 'bans_nightly_event', array( __CLASS__, 'nightly_fallback' ) );
+
+		if ( ! wp_next_scheduled( 'bans_nightly_event' ) ) {
+			wp_schedule_event( strtotime( '02:00 tomorrow' ), 'daily', 'bans_nightly_event' );
+		}
 	}
 
-	public static function register_routes() {
-		register_rest_route(
-			self::ROUTE_NS,
-			'/push',
-			array(
-				'methods'             => 'POST',
-				'callback'            => array( __CLASS__, 'handle_push' ),
-				'permission_callback' => '__return_true', // We authenticate via shared secret header.
-			)
-		);
-	}
-
-	public static function handle_push( WP_REST_Request $request ) {
+	/**
+	 * Optional fallback: re-send the last pushed data.
+	 * This is useful if you want WP to always send at 2am even if GitHub pushes earlier.
+	 * If you don't want fallback sends, you can remove this cron entirely.
+	 */
+	public static function nightly_fallback() {
 		$settings = BANS_Admin::get_settings();
+		$last     = get_option( 'bans_last_push', array() );
+		$rows     = isset( $last['rows'] ) && is_array( $last['rows'] ) ? $last['rows'] : array();
 
-		$secret_header = $request->get_header( 'x-bans-secret' );
-		$expected      = isset( $settings['push_secret'] ) ? (string) $settings['push_secret'] : '';
-
-		if ( empty( $expected ) || empty( $secret_header ) || ! hash_equals( $expected, $secret_header ) ) {
-			return new WP_REST_Response(
-				array( 'ok' => false, 'error' => 'Unauthorized' ),
-				401
-			);
+		if ( empty( $rows ) ) {
+			return;
 		}
 
-		$payload = $request->get_json_params();
-		if ( ! is_array( $payload ) ) {
-			return new WP_REST_Response(
-				array( 'ok' => false, 'error' => 'Invalid JSON payload' ),
-				400
-			);
+		self::send_email_with_csv( $settings, $rows, false );
+	}
+
+	/**
+	 * Send email with CSV attachment.
+	 *
+	 * @param array $settings Settings.
+	 * @param array $rows     Array of associative rows.
+	 * @param bool  $is_test  Whether this is a test email.
+	 *
+	 * @return bool
+	 */
+	public static function send_email_with_csv( $settings, $rows, $is_test = false ) {
+
+		$recipients = array();
+
+		if ( $is_test ) {
+			if ( ! empty( $settings['test_email'] ) ) {
+				$recipients[] = trim( (string) $settings['test_email'] );
+			}
+		} else {
+			if ( ! empty( $settings['emails'] ) ) {
+				$recipients = array_map( 'trim', explode( ',', (string) $settings['emails'] ) );
+			}
 		}
 
-		$rows = isset( $payload['rows'] ) && is_array( $payload['rows'] ) ? $payload['rows'] : array();
+		$recipients = array_values( array_filter( $recipients ) );
 
-		$sanitized_rows = array();
+		if ( empty( $recipients ) ) {
+			error_log( '[BANS] No recipients configured. Email not sent.' );
+			return false;
+		}
+
+		$csv_path = self::generate_csv( $rows );
+
+		$subject = $is_test ? 'Basketball Stats (Test)' : 'Basketball Nightly Stats';
+		$body    = self::format_email( $rows );
+
+		$sent = wp_mail(
+			$recipients,
+			$subject,
+			$body,
+			array( 'Content-Type: text/plain; charset=UTF-8' ),
+			array( $csv_path )
+		);
+
+		@unlink( $csv_path );
+
+		if ( ! $sent ) {
+			error_log( '[BANS] wp_mail returned false.' );
+		}
+
+		return (bool) $sent;
+	}
+
+	private static function generate_csv( $rows ) {
+		$tmp = wp_tempnam( 'bans_stats.csv' );
+		$fh  = fopen( $tmp, 'w' );
+
+		fputcsv( $fh, array_keys( $rows[0] ) );
+
 		foreach ( $rows as $row ) {
-			if ( ! is_array( $row ) ) {
-				continue;
-			}
-
-			$player = sanitize_text_field( $row['player'] ?? '' );
-			if ( '' === $player ) {
-				continue;
-			}
-
-			$sanitized_rows[] = array(
-				'Player'     => $player,
-				'Game Date'  => sanitize_text_field( $row['game_date'] ?? '' ),
-				'Game URL'   => esc_url_raw( $row['game_url'] ?? '' ),
-				'Minutes'    => sanitize_text_field( $row['minutes'] ?? '' ),
-				'Points'     => (int) ( $row['points'] ?? 0 ),
-				'Rebounds'   => (int) ( $row['rebounds'] ?? 0 ),
-				'Assists'    => (int) ( $row['assists'] ?? 0 ),
-				'Steals'     => (int) ( $row['steals'] ?? 0 ),
-				'Turnovers'  => (int) ( $row['turnovers'] ?? 0 ),
-			);
+			fputcsv( $fh, $row );
 		}
 
-		if ( empty( $sanitized_rows ) ) {
-			error_log( '[BANS] Push received but contained zero usable rows.' );
+		fclose( $fh );
+		return $tmp;
+	}
 
-			// Store last push anyway for visibility.
-			update_option(
-				'bans_last_push',
-				array(
-					'generated_at_utc' => sanitize_text_field( $payload['generated_at_utc'] ?? '' ),
-					'rows'             => array(),
-				),
-				false
-			);
+	private static function format_email( $rows ) {
+		$lines = array();
 
-			return new WP_REST_Response(
-				array( 'ok' => true, 'sent' => false, 'reason' => 'No rows' ),
-				200
-			);
+		foreach ( $rows as $row ) {
+			$line = array();
+			foreach ( $row as $k => $v ) {
+				$line[] = "{$k}: {$v}";
+			}
+			$lines[] = implode( ' | ', $line );
 		}
 
-		// Store last successful push (useful for debugging)
-		update_option(
-			'bans_last_push',
-			array(
-				'generated_at_utc' => sanitize_text_field( $payload['generated_at_utc'] ?? '' ),
-				'rows'             => $sanitized_rows,
-			),
-			false
-		);
-
-		$sent = BANS_Cron::send_email_with_csv( $settings, $sanitized_rows, false );
-
-		return new WP_REST_Response(
-			array(
-				'ok'   => true,
-				'sent' => (bool) $sent,
-				'rows' => count( $sanitized_rows ),
-			),
-			200
-		);
+		return implode( "\n\n", $lines ) . "\n\n(See attached CSV.)";
 	}
 }
