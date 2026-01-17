@@ -24,6 +24,9 @@ class BANS_Cron {
 	}
 
 	public static function send_email_with_csv( $settings, $rows, $is_test = false ) {
+		$type = $is_test ? 'TEST' : 'DAILY';
+
+		error_log( "[BANS] Starting {$type} email send..." );
 
 		$recipients = array();
 
@@ -40,16 +43,27 @@ class BANS_Cron {
 		$recipients = array_values( array_filter( $recipients ) );
 
 		if ( empty( $recipients ) ) {
-			error_log( '[BANS] No recipients configured. Email not sent.' );
+			error_log( "[BANS] {$type}: No recipients configured. Email not sent." );
 			return false;
 		}
+
+		error_log( "[BANS] {$type}: Recipients: " . implode( ', ', $recipients ) );
 
 		if ( empty( $rows ) || ! is_array( $rows ) ) {
-			error_log( '[BANS] No rows provided. Email not sent.' );
+			error_log( "[BANS] {$type}: No rows provided. Email not sent." );
 			return false;
 		}
 
+		error_log( "[BANS] {$type}: Processing " . count( $rows ) . " row(s)..." );
+
 		$csv_path = self::generate_csv( $rows );
+
+		if ( ! file_exists( $csv_path ) ) {
+			error_log( "[BANS] {$type}: Failed to generate CSV at {$csv_path}." );
+			return false;
+		}
+
+		error_log( "[BANS] {$type}: CSV generated at {$csv_path}" );
 
 		$subject = $is_test ? 'Basketball Stats (Test)' : 'Basketball Nightly Stats';
 		$body    = self::format_email( $rows );
@@ -64,8 +78,10 @@ class BANS_Cron {
 
 		@unlink( $csv_path );
 
-		if ( ! $sent ) {
-			error_log( '[BANS] wp_mail returned false.' );
+		if ( $sent ) {
+			error_log( "[BANS] {$type}: wp_mail() returned TRUE - email handed off to mail system." );
+		} else {
+			error_log( "[BANS] {$type}: wp_mail() returned FALSE - email failed to send." );
 		}
 
 		return (bool) $sent;

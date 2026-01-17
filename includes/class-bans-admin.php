@@ -54,9 +54,10 @@ class BANS_Admin {
 			exit;
 		}
 
-		BANS_Cron::send_email_with_csv( $settings, $rows, true );
+		$sent = BANS_Cron::send_email_with_csv( $settings, $rows, true );
 
-		wp_redirect( admin_url( 'options-general.php?page=bans-settings&msg=test_sent' ) );
+		$msg = $sent ? 'test_sent' : 'test_failed';
+		wp_redirect( admin_url( 'options-general.php?page=bans-settings&msg=' . $msg ) );
 		exit;
 	}
 
@@ -69,7 +70,9 @@ class BANS_Admin {
 
 		if ( isset( $_GET['msg'] ) ) {
 			if ( 'test_sent' === $_GET['msg'] ) {
-				echo '<div class="updated"><p>Test email sent (using last pushed data).</p></div>';
+				echo '<div class="updated"><p>Test email sent successfully (using last pushed data). Check your inbox.</p></div>';
+			} elseif ( 'test_failed' === $_GET['msg'] ) {
+				echo '<div class="notice notice-error"><p>Test email failed to send. Check the debug.log for details.</p></div>';
 			} elseif ( 'no_rows' === $_GET['msg'] ) {
 				echo '<div class="notice notice-warning"><p>No pushed rows exist yet. Run GitHub Actions once first.</p></div>';
 			}
