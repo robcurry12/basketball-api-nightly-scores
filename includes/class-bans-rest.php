@@ -116,8 +116,7 @@ class BANS_REST {
 			);
 		}
 
-		$settings = BANS_Admin::get_settings();
-		$payload  = $request->get_json_params();
+		$payload = $request->get_json_params();
 
 		if ( ! is_array( $payload ) ) {
 			return new WP_REST_Response(
@@ -153,7 +152,8 @@ class BANS_REST {
 			);
 		}
 
-		// Store last push for debugging/visibility
+		// Store data for the nightly cron to send at 2am.
+		// Email is NOT sent here - it's sent by the WP cron (bans_nightly_event).
 		update_option(
 			'bans_last_push',
 			array(
@@ -167,18 +167,16 @@ class BANS_REST {
 			error_log( '[BANS] Push received but contained zero usable rows.' );
 
 			return new WP_REST_Response(
-				array( 'ok' => true, 'sent' => false, 'reason' => 'No rows' ),
+				array( 'ok' => true, 'stored' => false, 'reason' => 'No rows' ),
 				200
 			);
 		}
 
-		$sent = BANS_Cron::send_email_with_csv( $settings, $sanitized_rows, false );
-
 		return new WP_REST_Response(
 			array(
-				'ok'   => true,
-				'sent' => (bool) $sent,
-				'rows' => count( $sanitized_rows ),
+				'ok'     => true,
+				'stored' => true,
+				'rows'   => count( $sanitized_rows ),
 			),
 			200
 		);
