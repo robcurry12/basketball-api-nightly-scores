@@ -1,5 +1,17 @@
 {
-  "source": "seed",
-  "generated_at_utc": null,
-  "rows": []
+  "source": "github-actions",
+  "generated_at_utc": "2026-09-11T20:41:48.387Z",
+  "rows": [
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-09-10",
+      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/bremerhaven-vadYibtl/?mid=hA2ClFrh",
+      "minutes": "21:51",
+      "points": 19,
+      "rebounds": 3,
+      "assists": 1,
+      "steals": 2,
+      "turnovers": 0
+    }
+  ]
 }
