@@ -77,12 +77,9 @@ class BANS_REST {
 			);
 		}
 
-		$settings = BANS_Admin::get_settings();
-		$players  = isset( $settings['players'] ) && is_array( $settings['players'] ) ? $settings['players'] : array();
-
 		$out = array();
 
-		foreach ( $players as $p ) {
+		foreach ( BANS_Players::get_crawl_players() as $p ) {
 			$label = sanitize_text_field( $p['label'] ?? '' );
 			$slug  = sanitize_title( $p['flashscore_slug'] ?? '' );
 			$id    = sanitize_text_field( $p['flashscore_id'] ?? '' );

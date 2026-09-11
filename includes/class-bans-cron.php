@@ -1,22 +1,30 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Nightly email sender.
+ *
+ * Scraping happens externally (GitHub Actions) and is pushed into WordPress
+ * via BANS_REST, which stores the rows in the `bans_last_push` option. This
+ * cron simply emails those rows (plus a CSV attachment) once per night.
+ */
 class BANS_Cron {
 
 	public static function init() {
-		add_action( 'bans_nightly_event', array( __CLASS__, 'nightly_fallback' ) );
+		add_action( 'bans_nightly_event', array( __CLASS__, 'nightly' ) );
 
 		if ( ! wp_next_scheduled( 'bans_nightly_event' ) ) {
 			wp_schedule_event( strtotime( '02:00 tomorrow' ), 'daily', 'bans_nightly_event' );
 		}
 	}
 
-	public static function nightly_fallback() {
+	public static function nightly() {
 		$settings = BANS_Admin::get_settings();
 		$last     = get_option( 'bans_last_push', array() );
 		$rows     = isset( $last['rows'] ) && is_array( $last['rows'] ) ? $last['rows'] : array();
 
 		if ( empty( $rows ) ) {
+			error_log( '[BANS] DAILY: No pushed rows available. Email not sent.' );
 			return;
 		}
 

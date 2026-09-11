@@ -8,6 +8,7 @@ class BANS_Admin {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_post_bans_send_test_from_last_push', array( __CLASS__, 'send_test_from_last_push' ) );
+		add_action( 'admin_init', array( __CLASS__, 'maybe_migrate_legacy_players' ) );
 	}
 
 	public static function add_menu() {
@@ -22,7 +23,6 @@ class BANS_Admin {
 
 	public static function get_settings() {
 		$defaults = array(
-			'players'     => array(),
 			'emails'      => '',
 			'test_email'  => get_option( 'admin_email' ),
 			'push_secret' => '',
@@ -42,8 +42,78 @@ class BANS_Admin {
 		return $settings;
 	}
 
+	/**
+	 * One-time migration: copy Flashscore fields from the old settings-based
+	 * players[] array onto matching rba_player posts (matched by title), and
+	 * flag those players for inclusion. Runs once, then records a marker.
+	 */
+	public static function maybe_migrate_legacy_players() {
+		if ( get_option( 'bans_migrated_players' ) ) {
+			return;
+		}
+
+		$raw            = get_option( self::OPTION_KEY, array() );
+		$legacy_players = ( is_array( $raw ) && ! empty( $raw['players'] ) && is_array( $raw['players'] ) )
+			? $raw['players']
+			: array();
+
+		if ( empty( $legacy_players ) ) {
+			update_option( 'bans_migrated_players', 1, false );
+			return;
+		}
+
+		foreach ( $legacy_players as $legacy ) {
+			$label = trim( (string) ( $legacy['label'] ?? '' ) );
+			$slug  = trim( (string) ( $legacy['flashscore_slug'] ?? '' ) );
+			$id    = trim( (string) ( $legacy['flashscore_id'] ?? '' ) );
+
+			if ( '' === $label || '' === $slug || '' === $id ) {
+				continue;
+			}
+
+			$match_id = self::find_player_by_title( $label );
+			if ( ! $match_id ) {
+				continue;
+			}
+
+			// Don't clobber fields an editor may already have set on the post.
+			if ( '' === (string) get_post_meta( $match_id, BANS_META_SLUG, true ) ) {
+				update_post_meta( $match_id, BANS_META_SLUG, sanitize_title( $slug ) );
+			}
+			if ( '' === (string) get_post_meta( $match_id, BANS_META_ID, true ) ) {
+				update_post_meta( $match_id, BANS_META_ID, sanitize_text_field( $id ) );
+			}
+			update_post_meta( $match_id, BANS_META_INCLUDE, '1' );
+		}
+
+		update_option( 'bans_migrated_players', 1, false );
+	}
+
+	/**
+	 * Find a published player post by exact title. Returns the post ID or 0.
+	 */
+	private static function find_player_by_title( $title ) {
+		$query = new WP_Query( array(
+			'post_type'              => BANS_PLAYER_POST_TYPE,
+			'post_status'            => 'publish',
+			'title'                  => $title,
+			'posts_per_page'         => 1,
+			'no_found_rows'          => true,
+			'ignore_sticky_posts'    => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'fields'                 => 'ids',
+		) );
+
+		return ! empty( $query->posts ) ? (int) $query->posts[0] : 0;
+	}
+
 	public static function send_test_from_last_push() {
 		check_admin_referer( 'bans_send_test_from_last_push' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Insufficient permissions.' );
+		}
 
 		$settings = self::get_settings();
 		$last     = get_option( 'bans_last_push', array() );
@@ -64,6 +134,7 @@ class BANS_Admin {
 	public static function render_page() {
 		if ( isset( $_POST['save_bans'] ) ) {
 			check_admin_referer( 'bans_save' );
+			self::save_player_inclusion();
 			update_option( self::OPTION_KEY, self::sanitize_settings(), false );
 			echo '<div class="updated"><p>Settings saved.</p></div>';
 		}
@@ -79,27 +150,19 @@ class BANS_Admin {
 		}
 
 		$settings = self::get_settings();
-		$players  = isset( $settings['players'] ) && is_array( $settings['players'] ) ? $settings['players'] : array();
-
+		$players  = BANS_Players::get_all_players();
 		$push_url = home_url( '/wp-json/bans/v1/push' );
+		$new_url  = admin_url( 'post-new.php?post_type=' . BANS_PLAYER_POST_TYPE );
 
 		?>
 		<style>
-			#bans-players-table input {
-				height: 28px;
-				font-size: 13px;
-				width: 100%;
-				max-width: 420px;
-			}
 			#bans-players-table th,
-			#bans-players-table td {
-				padding: 6px 8px;
-				vertical-align: middle;
-			}
-			#bans-players-table th:nth-child(1) { width: 22%; }
-			#bans-players-table th:nth-child(2) { width: 32%; }
-			#bans-players-table th:nth-child(3) { width: 32%; }
-			#bans-players-table th:nth-child(4) { width: 14%; }
+			#bans-players-table td { padding: 8px 10px; vertical-align: middle; }
+			#bans-players-table th:nth-child(1) { width: 60px; text-align: center; }
+			#bans-players-table td:nth-child(1) { text-align: center; }
+			.bans-missing { color: #b32d2e; font-weight: 600; }
+			.bans-ok { color: #1a7f37; }
+			.bans-fields { color: #646970; font-size: 12px; }
 		</style>
 
 		<div class="wrap">
@@ -112,36 +175,59 @@ class BANS_Admin {
 			<form method="post">
 				<?php wp_nonce_field( 'bans_save' ); ?>
 
-				<h2>Players (for reference)</h2>
+				<h2>Players in the Nightly Crawl</h2>
 				<p style="max-width: 900px;">
-					This list is stored in WordPress for reference, but the GitHub Actions script currently defines the players it scrapes.
-					(If you want, we can make GitHub fetch players from WP securely in a follow-up.)
+					Tick each player you want scanned nightly. The Flashscore slug and ID
+					are set on each
+					<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . BANS_PLAYER_POST_TYPE ) ); ?>">Player</a>
+					post. A player with missing fields can't be scanned even if ticked.
 				</p>
 
-				<table class="widefat" id="bans-players-table">
-					<thead>
-						<tr>
-							<th>Label</th>
-							<th>Flashscore Slug</th>
-							<th>Flashscore ID</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ( $players as $i => $p ) : ?>
-							<tr class="bans-player-row">
-								<td><input type="text" name="players[<?php echo (int) $i; ?>][label]" value="<?php echo esc_attr( $p['label'] ?? '' ); ?>"></td>
-								<td><input type="text" name="players[<?php echo (int) $i; ?>][flashscore_slug]" value="<?php echo esc_attr( $p['flashscore_slug'] ?? '' ); ?>"></td>
-								<td><input type="text" name="players[<?php echo (int) $i; ?>][flashscore_id]" value="<?php echo esc_attr( $p['flashscore_id'] ?? '' ); ?>"></td>
-								<td><button type="button" class="button bans-remove-player">Remove</button></td>
+				<?php if ( empty( $players ) ) : ?>
+					<p>
+						No players found.
+						<a href="<?php echo esc_url( $new_url ); ?>">Add a Player</a> to get started.
+					</p>
+				<?php else : ?>
+					<table class="widefat striped" id="bans-players-table">
+						<thead>
+							<tr>
+								<th>Include</th>
+								<th>Player</th>
+								<th>Flashscore Fields</th>
 							</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-
-				<p style="margin-top:10px;">
-					<button type="button" class="button" id="bans-add-player">Add Player</button>
-				</p>
+						</thead>
+						<tbody>
+							<?php foreach ( $players as $p ) : ?>
+								<tr>
+									<td>
+										<input type="checkbox"
+											name="bans_include[]"
+											value="<?php echo (int) $p['id']; ?>"
+											<?php checked( $p['include'] ); ?>>
+									</td>
+									<td>
+										<a href="<?php echo esc_url( get_edit_post_link( $p['id'] ) ); ?>">
+											<?php echo esc_html( $p['label'] ); ?>
+										</a>
+									</td>
+									<td>
+										<?php if ( $p['scannable'] ) : ?>
+											<span class="bans-ok">&#10003; Ready</span>
+											<span class="bans-fields">
+												(<?php echo esc_html( $p['flashscore_slug'] ); ?> /
+												<?php echo esc_html( $p['flashscore_id'] ); ?>)
+											</span>
+										<?php else : ?>
+											<span class="bans-missing">Missing slug/ID</span>
+											&mdash; <a href="<?php echo esc_url( get_edit_post_link( $p['id'] ) ); ?>">edit player</a>
+										<?php endif; ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
 
 				<h2>Email</h2>
 				<p>
@@ -172,49 +258,23 @@ class BANS_Admin {
 				<button class="button">Send Test Email (Using Last Push + CSV)</button>
 			</form>
 		</div>
-
-		<script>
-		(function () {
-			const tableBody = document.querySelector('#bans-players-table tbody');
-			const addBtn = document.getElementById('bans-add-player');
-
-			if (!tableBody || !addBtn) return;
-
-			function rowTemplate(index) {
-				return `
-					<tr class="bans-player-row">
-						<td><input type="text" name="players[${index}][label]"></td>
-						<td><input type="text" name="players[${index}][flashscore_slug]"></td>
-						<td><input type="text" name="players[${index}][flashscore_id]"></td>
-						<td><button type="button" class="button bans-remove-player">Remove</button></td>
-					</tr>
-				`;
-			}
-
-			function reindex() {
-				const rows = tableBody.querySelectorAll('tr.bans-player-row');
-				rows.forEach((row, i) => {
-					row.querySelectorAll('input').forEach(input => {
-						input.name = input.name.replace(/players\[\d+\]/, 'players[' + i + ']');
-					});
-				});
-			}
-
-			addBtn.addEventListener('click', () => {
-				const index = tableBody.querySelectorAll('tr.bans-player-row').length;
-				tableBody.insertAdjacentHTML('beforeend', rowTemplate(index));
-			});
-
-			tableBody.addEventListener('click', (e) => {
-				if (e.target && e.target.classList.contains('bans-remove-player')) {
-					const row = e.target.closest('tr');
-					if (row) row.remove();
-					reindex();
-				}
-			});
-		})();
-		</script>
 		<?php
+	}
+
+	/**
+	 * Persist the per-player "include in crawl" flag from the submitted
+	 * checkboxes. Any published player not checked is set to excluded.
+	 */
+	private static function save_player_inclusion() {
+		$checked = isset( $_POST['bans_include'] ) && is_array( $_POST['bans_include'] )
+			? array_map( 'intval', $_POST['bans_include'] )
+			: array();
+		$checked = array_flip( $checked );
+
+		foreach ( BANS_Players::get_all_players() as $p ) {
+			$include = isset( $checked[ $p['id'] ] ) ? '1' : '';
+			update_post_meta( $p['id'], BANS_META_INCLUDE, $include );
+		}
 	}
 
 	private static function sanitize_settings() {
@@ -228,32 +288,7 @@ class BANS_Admin {
 			$current['push_secret'] = sanitize_text_field( $_POST['push_secret'] ?? $current['push_secret'] );
 		}
 
-		$players = array();
-		$posted  = $_POST['players'] ?? array();
-
-		if ( is_array( $posted ) ) {
-			foreach ( $posted as $row ) {
-				$label = trim( (string) ( $row['label'] ?? '' ) );
-				$slug  = trim( (string) ( $row['flashscore_slug'] ?? '' ) );
-				$id    = trim( (string) ( $row['flashscore_id'] ?? '' ) );
-
-				if ( '' === $label && '' === $slug && '' === $id ) {
-					continue;
-				}
-				if ( '' === $slug || '' === $id ) {
-					continue;
-				}
-
-				$players[] = array(
-					'label'           => sanitize_text_field( $label ),
-					'flashscore_slug' => sanitize_title( $slug ),
-					'flashscore_id'   => sanitize_text_field( $id ),
-				);
-			}
-		}
-
 		return array(
-			'players'     => $players,
 			'emails'      => sanitize_textarea_field( $_POST['emails'] ?? '' ),
 			'test_email'  => sanitize_email( $_POST['test_email'] ?? get_option( 'admin_email' ) ),
 			'push_secret' => $current['push_secret'],
