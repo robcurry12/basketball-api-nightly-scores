@@ -7,7 +7,8 @@ class BANS_Admin {
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
-		add_action( 'admin_post_bans_send_test_from_last_push', array( __CLASS__, 'send_test_from_last_push' ) );
+		add_action( 'admin_post_bans_send_test', array( __CLASS__, 'handle_send_test' ) );
+		add_action( 'admin_post_bans_sync_players', array( __CLASS__, 'handle_sync_players' ) );
 		add_action( 'admin_init', array( __CLASS__, 'maybe_migrate_legacy_players' ) );
 	}
 
@@ -23,23 +24,38 @@ class BANS_Admin {
 
 	public static function get_settings() {
 		$defaults = array(
-			'emails'      => '',
-			'test_email'  => get_option( 'admin_email' ),
-			'push_secret' => '',
+			'emails'          => '',
+			'test_email'      => get_option( 'admin_email' ),
+			'gh_token'        => '',
+			'gh_owner'        => 'robcurry12',
+			'gh_repo'         => 'basketball-api-nightly-scores',
+			'gh_branch'       => 'main',
+			'gh_players_path' => 'data/players.json',
+			'gh_results_path' => 'data/latest.json',
 		);
 
-		$settings = wp_parse_args(
-			get_option( self::OPTION_KEY, array() ),
-			$defaults
-		);
+		return wp_parse_args( get_option( self::OPTION_KEY, array() ), $defaults );
+	}
 
-		// Auto-generate secret if missing (safe; admin can regenerate too).
-		if ( empty( $settings['push_secret'] ) ) {
-			$settings['push_secret'] = wp_generate_password( 40, false, false );
-			update_option( self::OPTION_KEY, $settings, false );
+	/**
+	 * Stash a one-time admin notice (survives the post/redirect cycle).
+	 */
+	private static function add_notice( $type, $text ) {
+		set_transient( 'bans_notice_' . get_current_user_id(), array( 'type' => $type, 'text' => $text ), 60 );
+	}
+
+	private static function print_notice() {
+		$key    = 'bans_notice_' . get_current_user_id();
+		$notice = get_transient( $key );
+		if ( ! $notice ) {
+			return;
 		}
+		delete_transient( $key );
 
-		return $settings;
+		$class = 'error' === $notice['type'] ? 'notice notice-error'
+			: ( 'warning' === $notice['type'] ? 'notice notice-warning' : 'updated' );
+
+		echo '<div class="' . esc_attr( $class ) . '"><p>' . esc_html( $notice['text'] ) . '</p></div>';
 	}
 
 	/**
@@ -108,26 +124,51 @@ class BANS_Admin {
 		return ! empty( $query->posts ) ? (int) $query->posts[0] : 0;
 	}
 
-	public static function send_test_from_last_push() {
-		check_admin_referer( 'bans_send_test_from_last_push' );
+	/**
+	 * Send a test email using the latest results pulled from GitHub.
+	 */
+	public static function handle_send_test() {
+		check_admin_referer( 'bans_send_test' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( 'Insufficient permissions.' );
 		}
 
 		$settings = self::get_settings();
-		$last     = get_option( 'bans_last_push', array() );
-		$rows     = isset( $last['rows'] ) && is_array( $last['rows'] ) ? $last['rows'] : array();
+		$rows     = BANS_Cron::get_result_rows( $settings );
 
 		if ( empty( $rows ) ) {
-			wp_redirect( admin_url( 'options-general.php?page=bans-settings&msg=no_rows' ) );
-			exit;
+			self::add_notice( 'warning', 'No results found in the GitHub results file yet. Run the scraper (GitHub Actions) once so it commits data/latest.json.' );
+			self::redirect_back();
 		}
 
 		$sent = BANS_Cron::send_email_with_csv( $settings, $rows, true );
 
-		$msg = $sent ? 'test_sent' : 'test_failed';
-		wp_redirect( admin_url( 'options-general.php?page=bans-settings&msg=' . $msg ) );
+		if ( $sent ) {
+			self::add_notice( 'updated', 'Test email sent successfully (using the latest results from GitHub). Check your inbox.' );
+		} else {
+			self::add_notice( 'error', 'Test email failed to send. Check debug.log for details.' );
+		}
+		self::redirect_back();
+	}
+
+	/**
+	 * Push the current crawl list to GitHub on demand.
+	 */
+	public static function handle_sync_players() {
+		check_admin_referer( 'bans_sync_players' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Insufficient permissions.' );
+		}
+
+		$result = BANS_GitHub::push_players( self::get_settings() );
+		self::add_notice( $result['ok'] ? 'updated' : 'error', $result['message'] );
+		self::redirect_back();
+	}
+
+	private static function redirect_back() {
+		wp_safe_redirect( admin_url( 'options-general.php?page=bans-settings' ) );
 		exit;
 	}
 
@@ -136,23 +177,23 @@ class BANS_Admin {
 			check_admin_referer( 'bans_save' );
 			self::save_players();
 			update_option( self::OPTION_KEY, self::sanitize_settings(), false );
-			echo '<div class="updated"><p>Settings saved.</p></div>';
+
+			// Keep the repo's players.json in sync with what was just saved.
+			$sync = BANS_GitHub::push_players( self::get_settings() );
+			if ( $sync['ok'] ) {
+				self::add_notice( 'updated', 'Settings saved. ' . $sync['message'] );
+			} else {
+				self::add_notice( 'warning', 'Settings saved, but the GitHub sync did not run: ' . $sync['message'] );
+			}
+			self::redirect_back();
 		}
 
-		if ( isset( $_GET['msg'] ) ) {
-			if ( 'test_sent' === $_GET['msg'] ) {
-				echo '<div class="updated"><p>Test email sent successfully (using last pushed data). Check your inbox.</p></div>';
-			} elseif ( 'test_failed' === $_GET['msg'] ) {
-				echo '<div class="notice notice-error"><p>Test email failed to send. Check the debug.log for details.</p></div>';
-			} elseif ( 'no_rows' === $_GET['msg'] ) {
-				echo '<div class="notice notice-warning"><p>No pushed rows exist yet. Run GitHub Actions once first.</p></div>';
-			}
-		}
+		self::print_notice();
 
 		$settings = self::get_settings();
 		$players  = BANS_Players::get_all_players();
-		$push_url = home_url( '/wp-json/bans/v1/push' );
 		$new_url  = admin_url( 'post-new.php?post_type=' . BANS_PLAYER_POST_TYPE );
+		$has_token = '' !== trim( (string) $settings['gh_token'] );
 
 		?>
 		<style>
@@ -167,13 +208,18 @@ class BANS_Admin {
 			.bans-edit-fields label { font-size: 12px; color: #646970; display: block; }
 			.bans-edit-fields input { height: 30px; }
 			.bans-check-all-label { font-weight: 400; font-size: 11px; display: block; }
+			.bans-gh-grid { display: grid; grid-template-columns: 160px 1fr; gap: 10px 14px; max-width: 720px; align-items: center; }
+			.bans-gh-grid input { width: 100%; }
 		</style>
 
 		<div class="wrap">
 			<h1>Basketball Nightly Scores</h1>
 
-			<p><strong>Push URL (GitHub Secret: BANS_PUSH_URL)</strong><br>
-				<code><?php echo esc_html( $push_url ); ?></code>
+			<p style="max-width: 900px;">
+				WordPress syncs the crawl list to <code><?php echo esc_html( $settings['gh_players_path'] ); ?></code>
+				in your GitHub repo. GitHub Actions scrapes nightly and commits results to
+				<code><?php echo esc_html( $settings['gh_results_path'] ); ?></code>, which WordPress pulls in
+				to send the nightly email. No inbound requests hit this site.
 			</p>
 
 			<form method="post">
@@ -185,7 +231,7 @@ class BANS_Admin {
 					slug and ID inline. A player with missing fields can't be scanned
 					even if ticked. (These same fields also appear on each
 					<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . BANS_PLAYER_POST_TYPE ) ); ?>">Player</a>
-					post.)
+					post.) Saving syncs the list to GitHub.
 				</p>
 
 				<?php if ( empty( $players ) ) : ?>
@@ -268,23 +314,52 @@ class BANS_Admin {
 					<input type="email" name="test_email" value="<?php echo esc_attr( $settings['test_email'] ); ?>" style="width:100%;max-width:420px;">
 				</p>
 
-				<h2>GitHub Actions Secret</h2>
-				<p>
-					<label><strong>Push Secret (GitHub Secret: BANS_SECRET)</strong></label><br>
-					<input type="text" name="push_secret" value="<?php echo esc_attr( $settings['push_secret'] ); ?>" style="width:100%;max-width:600px;">
+				<h2>GitHub Repository</h2>
+				<div class="bans-gh-grid">
+					<label for="bans_gh_owner"><strong>Owner</strong></label>
+					<input type="text" id="bans_gh_owner" name="gh_owner" value="<?php echo esc_attr( $settings['gh_owner'] ); ?>" placeholder="robcurry12">
+
+					<label for="bans_gh_repo"><strong>Repository</strong></label>
+					<input type="text" id="bans_gh_repo" name="gh_repo" value="<?php echo esc_attr( $settings['gh_repo'] ); ?>" placeholder="basketball-api-nightly-scores">
+
+					<label for="bans_gh_branch"><strong>Branch</strong></label>
+					<input type="text" id="bans_gh_branch" name="gh_branch" value="<?php echo esc_attr( $settings['gh_branch'] ); ?>" placeholder="main">
+
+					<label for="bans_gh_players_path"><strong>Players file</strong></label>
+					<input type="text" id="bans_gh_players_path" name="gh_players_path" value="<?php echo esc_attr( $settings['gh_players_path'] ); ?>" placeholder="data/players.json">
+
+					<label for="bans_gh_results_path"><strong>Results file</strong></label>
+					<input type="text" id="bans_gh_results_path" name="gh_results_path" value="<?php echo esc_attr( $settings['gh_results_path'] ); ?>" placeholder="data/latest.json">
+
+					<label for="bans_gh_token"><strong>Access Token</strong></label>
+					<input type="password" id="bans_gh_token" name="gh_token" value="" autocomplete="new-password"
+						placeholder="<?php echo esc_attr( $has_token ? 'A token is saved - leave blank to keep it' : 'Fine-grained PAT with Contents: Read and write' ); ?>">
+				</div>
+				<p class="description" style="max-width:720px;">
+					The token is used only for the outbound write of <code><?php echo esc_html( $settings['gh_players_path'] ); ?></code>.
+					Use a fine-grained personal access token scoped to this one repository with
+					<strong>Contents: Read and write</strong>. Leave the field blank to keep the saved token.
 				</p>
 
 				<p>
-					<button class="button-primary" name="save_bans" value="1">Save Settings</button>
-					<button class="button" type="submit" name="regen_secret" value="1">Regenerate Secret</button>
+					<button class="button-primary" name="save_bans" value="1">Save Settings &amp; Sync</button>
 				</p>
 			</form>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-				<?php wp_nonce_field( 'bans_send_test_from_last_push' ); ?>
-				<input type="hidden" name="action" value="bans_send_test_from_last_push">
-				<button class="button">Send Test Email (Using Last Push + CSV)</button>
-			</form>
+			<h2>Actions</h2>
+			<p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
+					<?php wp_nonce_field( 'bans_sync_players' ); ?>
+					<input type="hidden" name="action" value="bans_sync_players">
+					<button class="button">Sync Players to GitHub Now</button>
+				</form>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
+					<?php wp_nonce_field( 'bans_send_test' ); ?>
+					<input type="hidden" name="action" value="bans_send_test">
+					<button class="button">Send Test Email (Pull Latest from GitHub)</button>
+				</form>
+			</p>
 		</div>
 
 		<script>
@@ -367,18 +442,19 @@ class BANS_Admin {
 	private static function sanitize_settings() {
 		$current = self::get_settings();
 
-		// Regenerate secret if requested.
-		if ( isset( $_POST['regen_secret'] ) ) {
-			$current['push_secret'] = wp_generate_password( 40, false, false );
-		} else {
-			// Allow manual set (handy for copy/paste).
-			$current['push_secret'] = sanitize_text_field( $_POST['push_secret'] ?? $current['push_secret'] );
-		}
+		// Keep the saved token unless a new one was entered.
+		$posted_token = isset( $_POST['gh_token'] ) ? trim( (string) wp_unslash( $_POST['gh_token'] ) ) : '';
+		$token        = '' !== $posted_token ? sanitize_text_field( $posted_token ) : $current['gh_token'];
 
 		return array(
-			'emails'      => sanitize_textarea_field( $_POST['emails'] ?? '' ),
-			'test_email'  => sanitize_email( $_POST['test_email'] ?? get_option( 'admin_email' ) ),
-			'push_secret' => $current['push_secret'],
+			'emails'          => sanitize_textarea_field( $_POST['emails'] ?? '' ),
+			'test_email'      => sanitize_email( $_POST['test_email'] ?? get_option( 'admin_email' ) ),
+			'gh_token'        => $token,
+			'gh_owner'        => sanitize_text_field( $_POST['gh_owner'] ?? '' ),
+			'gh_repo'         => sanitize_text_field( $_POST['gh_repo'] ?? '' ),
+			'gh_branch'       => sanitize_text_field( $_POST['gh_branch'] ?? 'main' ),
+			'gh_players_path' => sanitize_text_field( $_POST['gh_players_path'] ?? 'data/players.json' ),
+			'gh_results_path' => sanitize_text_field( $_POST['gh_results_path'] ?? 'data/latest.json' ),
 		);
 	}
 }

@@ -1,61 +1,24 @@
-import { chromium } from "playwright";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { dirname } from "node:path";
+// Playwright is imported lazily (only when there's something to scrape) so the
+// empty-players path doesn't require the browser dependency to be installed.
 
-const PUSH_URL = process.env.BANS_PUSH_URL;
-const SECRET = process.env.BANS_SECRET;
+// Pull model: read the player list WordPress committed to the repo, scrape
+// Flashscore, and write results back to the repo. GitHub Actions then commits
+// the results file, which WordPress pulls in for the nightly email. Nothing
+// calls into WordPress, so the site's edge protection is never in the way.
+const PLAYERS_PATH = process.env.BANS_PLAYERS_PATH || "data/players.json";
+const RESULTS_PATH = process.env.BANS_RESULTS_PATH || "data/latest.json";
 
-if (!PUSH_URL || !SECRET) {
-  console.error("Missing BANS_PUSH_URL or BANS_SECRET env vars.");
-  process.exit(1);
-}
-
-const PLAYERS_URL =
-  process.env.BANS_PLAYERS_URL ||
-  PUSH_URL.replace(/\/push\/?$/, "/players");
-
-// A blank/Node User-Agent is itself a bot signal to some edge protection.
-// Send a realistic browser UA on the API calls (overridable via env).
-const API_USER_AGENT =
-  process.env.BANS_USER_AGENT ||
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
-    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-
-async function fetchPlayers() {
-  // Log the path (not the full URL) so a failing endpoint is diagnosable
-  // without leaking the site domain into public logs.
-  let pathForLog = PLAYERS_URL;
+async function loadPlayers() {
+  let text;
   try {
-    pathForLog = new URL(PLAYERS_URL).pathname;
-  } catch {}
-
-  const res = await fetch(PLAYERS_URL, {
-    method: "GET",
-    headers: {
-      "X-BANS-SECRET": SECRET,
-      Accept: "application/json",
-      "User-Agent": API_USER_AGENT,
-    },
-    redirect: "follow",
-  });
-
-  const text = await res.text();
-  const contentType = res.headers.get("content-type") || "";
-
-  if (!res.ok) {
+    text = await readFile(PLAYERS_PATH, "utf8");
+  } catch (e) {
+    console.error(`Could not read ${PLAYERS_PATH}: ${e.message}`);
     console.error(
-      `Players fetch failed: HTTP ${res.status} for ${pathForLog}\n` +
-        `Content-Type: ${contentType}\nBody (first 300 chars): ${text.slice(0, 300)}`
-    );
-    process.exit(1);
-  }
-
-  // A 200 with an HTML body means the request never reached the BANS REST
-  // route (plugin inactive, plain permalinks, or wrong BANS_PUSH_URL).
-  if (!contentType.includes("application/json") && text.trimStart().startsWith("<")) {
-    console.error(
-      `Players endpoint returned HTML, not JSON, for ${pathForLog} (HTTP ${res.status}).\n` +
-        `Check that: the BANS plugin is active, BANS_PUSH_URL points at ` +
-        `/wp-json/bans/v1/push, and the site uses pretty permalinks.\n` +
-        `Content-Type: ${contentType}\nBody (first 300 chars): ${text.slice(0, 300)}`
+      "WordPress writes this file when you save the Basketball Scores " +
+        "settings (or click “Sync Players to GitHub Now”). Sync once, then re-run."
     );
     process.exit(1);
   }
@@ -64,23 +27,30 @@ async function fetchPlayers() {
   try {
     data = JSON.parse(text);
   } catch (e) {
-    console.error(
-      `Players response was not valid JSON for ${pathForLog} (HTTP ${res.status}).\n` +
-        `Content-Type: ${contentType}\nBody (first 300 chars): ${text.slice(0, 300)}`
-    );
+    console.error(`Invalid JSON in ${PLAYERS_PATH}: ${e.message}`);
     process.exit(1);
   }
 
-  if (!data.ok || !Array.isArray(data.players)) {
-    console.error("Players response invalid:", JSON.stringify(data).slice(0, 300));
-    process.exit(1);
-  }
+  const players = Array.isArray(data.players) ? data.players : [];
+  return players
+    .map((p) => ({
+      label: p.label,
+      slug: p.flashscore_slug,
+      id: p.flashscore_id,
+    }))
+    .filter((p) => p.slug && p.id);
+}
 
-  return data.players.map((p) => ({
-    label: p.label,
-    slug: p.flashscore_slug,
-    id: p.flashscore_id,
-  }));
+async function writeResults(rows) {
+  const payload = {
+    source: "github-actions",
+    generated_at_utc: new Date().toISOString(),
+    rows,
+  };
+
+  await mkdir(dirname(RESULTS_PATH), { recursive: true });
+  await writeFile(RESULTS_PATH, JSON.stringify(payload, null, 2) + "\n", "utf8");
+  console.log(`Wrote ${rows.length} row(s) to ${RESULTS_PATH}`);
 }
 
 function parseFlashscoreDate(dateText) {
@@ -167,13 +137,15 @@ async function scrapePlayer(page, player) {
 }
 
 async function main() {
-  const players = await fetchPlayers();
+  const players = await loadPlayers();
 
   if (!players.length) {
-    console.log("No players returned from WP admin. Nothing to scrape.");
-    process.exit(0);
+    console.log("No scannable players in players.json. Writing empty results.");
+    await writeResults([]);
+    return;
   }
 
+  const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     userAgent:
@@ -195,8 +167,8 @@ async function main() {
       if (r.ok && !r.ignored) {
         rows.push({
           player: p.label,
-          game_date: r.game.date_iso, // WP will format to MM/DD/YYYY
-          game_url: r.game.url,       // WP will strip querystring
+          game_date: r.game.date_iso, // WP formats to MM/DD/YYYY
+          game_url: r.game.url, // WP strips querystring
           ...r.stats,
         });
       }
@@ -207,30 +179,7 @@ async function main() {
 
   await browser.close();
 
-  const payload = {
-    source: "github-actions",
-    generated_at_utc: new Date().toISOString(),
-    rows,
-  };
-
-  const res = await fetch(PUSH_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-BANS-SECRET": SECRET,
-      Accept: "application/json",
-      "User-Agent": API_USER_AGENT,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const text = await res.text();
-  if (!res.ok) {
-    console.error("Push failed:", res.status, text);
-    process.exit(1);
-  }
-
-  console.log("Push OK:", text);
+  await writeResults(rows);
 }
 
 main().catch((e) => {
