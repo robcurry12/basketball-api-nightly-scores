@@ -13,20 +13,55 @@ const PLAYERS_URL =
   PUSH_URL.replace(/\/push\/?$/, "/players");
 
 async function fetchPlayers() {
+  // Log the path (not the full URL) so a failing endpoint is diagnosable
+  // without leaking the site domain into public logs.
+  let pathForLog = PLAYERS_URL;
+  try {
+    pathForLog = new URL(PLAYERS_URL).pathname;
+  } catch {}
+
   const res = await fetch(PLAYERS_URL, {
     method: "GET",
-    headers: { "X-BANS-SECRET": SECRET },
+    headers: { "X-BANS-SECRET": SECRET, Accept: "application/json" },
+    redirect: "follow",
   });
 
   const text = await res.text();
+  const contentType = res.headers.get("content-type") || "";
+
   if (!res.ok) {
-    console.error("Players fetch failed:", res.status, text);
+    console.error(
+      `Players fetch failed: HTTP ${res.status} for ${pathForLog}\n` +
+        `Content-Type: ${contentType}\nBody (first 300 chars): ${text.slice(0, 300)}`
+    );
     process.exit(1);
   }
 
-  const data = JSON.parse(text);
+  // A 200 with an HTML body means the request never reached the BANS REST
+  // route (plugin inactive, plain permalinks, or wrong BANS_PUSH_URL).
+  if (!contentType.includes("application/json") && text.trimStart().startsWith("<")) {
+    console.error(
+      `Players endpoint returned HTML, not JSON, for ${pathForLog} (HTTP ${res.status}).\n` +
+        `Check that: the BANS plugin is active, BANS_PUSH_URL points at ` +
+        `/wp-json/bans/v1/push, and the site uses pretty permalinks.\n` +
+        `Content-Type: ${contentType}\nBody (first 300 chars): ${text.slice(0, 300)}`
+    );
+    process.exit(1);
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    console.error(
+      `Players response was not valid JSON for ${pathForLog} (HTTP ${res.status}).\n` +
+        `Content-Type: ${contentType}\nBody (first 300 chars): ${text.slice(0, 300)}`
+    );
+    process.exit(1);
+  }
+
   if (!data.ok || !Array.isArray(data.players)) {
-    console.error("Players response invalid:", data);
+    console.error("Players response invalid:", JSON.stringify(data).slice(0, 300));
     process.exit(1);
   }
 
