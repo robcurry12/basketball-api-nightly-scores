@@ -12,6 +12,13 @@ const PLAYERS_URL =
   process.env.BANS_PLAYERS_URL ||
   PUSH_URL.replace(/\/push\/?$/, "/players");
 
+// A blank/Node User-Agent is itself a bot signal to some edge protection.
+// Send a realistic browser UA on the API calls (overridable via env).
+const API_USER_AGENT =
+  process.env.BANS_USER_AGENT ||
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
 async function fetchPlayers() {
   // Log the path (not the full URL) so a failing endpoint is diagnosable
   // without leaking the site domain into public logs.
@@ -22,7 +29,11 @@ async function fetchPlayers() {
 
   const res = await fetch(PLAYERS_URL, {
     method: "GET",
-    headers: { "X-BANS-SECRET": SECRET, Accept: "application/json" },
+    headers: {
+      "X-BANS-SECRET": SECRET,
+      Accept: "application/json",
+      "User-Agent": API_USER_AGENT,
+    },
     redirect: "follow",
   });
 
@@ -207,6 +218,8 @@ async function main() {
     headers: {
       "Content-Type": "application/json",
       "X-BANS-SECRET": SECRET,
+      Accept: "application/json",
+      "User-Agent": API_USER_AGENT,
     },
     body: JSON.stringify(payload),
   });
