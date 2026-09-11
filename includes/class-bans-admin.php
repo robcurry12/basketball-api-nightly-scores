@@ -134,7 +134,7 @@ class BANS_Admin {
 	public static function render_page() {
 		if ( isset( $_POST['save_bans'] ) ) {
 			check_admin_referer( 'bans_save' );
-			self::save_player_inclusion();
+			self::save_players();
 			update_option( self::OPTION_KEY, self::sanitize_settings(), false );
 			echo '<div class="updated"><p>Settings saved.</p></div>';
 		}
@@ -163,6 +163,10 @@ class BANS_Admin {
 			.bans-missing { color: #b32d2e; font-weight: 600; }
 			.bans-ok { color: #1a7f37; }
 			.bans-fields { color: #646970; font-size: 12px; }
+			.bans-edit-fields { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+			.bans-edit-fields label { font-size: 12px; color: #646970; display: block; }
+			.bans-edit-fields input { height: 30px; }
+			.bans-check-all-label { font-weight: 400; font-size: 11px; display: block; }
 		</style>
 
 		<div class="wrap">
@@ -177,10 +181,11 @@ class BANS_Admin {
 
 				<h2>Players in the Nightly Crawl</h2>
 				<p style="max-width: 900px;">
-					Tick each player you want scanned nightly. The Flashscore slug and ID
-					are set on each
+					Tick each player you want scanned nightly, and set their Flashscore
+					slug and ID inline. A player with missing fields can't be scanned
+					even if ticked. (These same fields also appear on each
 					<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . BANS_PLAYER_POST_TYPE ) ); ?>">Player</a>
-					post. A player with missing fields can't be scanned even if ticked.
+					post.)
 				</p>
 
 				<?php if ( empty( $players ) ) : ?>
@@ -192,7 +197,10 @@ class BANS_Admin {
 					<table class="widefat striped" id="bans-players-table">
 						<thead>
 							<tr>
-								<th>Include</th>
+								<th>
+									<input type="checkbox" id="bans-check-all">
+									<span class="bans-check-all-label">All</span>
+								</th>
 								<th>Player</th>
 								<th>Flashscore Fields</th>
 							</tr>
@@ -202,6 +210,7 @@ class BANS_Admin {
 								<tr>
 									<td>
 										<input type="checkbox"
+											class="bans-include-cb"
 											name="bans_include[]"
 											value="<?php echo (int) $p['id']; ?>"
 											<?php checked( $p['include'] ); ?>>
@@ -212,16 +221,35 @@ class BANS_Admin {
 										</a>
 									</td>
 									<td>
-										<?php if ( $p['scannable'] ) : ?>
-											<span class="bans-ok">&#10003; Ready</span>
-											<span class="bans-fields">
-												(<?php echo esc_html( $p['flashscore_slug'] ); ?> /
-												<?php echo esc_html( $p['flashscore_id'] ); ?>)
+										<span class="bans-status" data-player="<?php echo (int) $p['id']; ?>">
+											<?php if ( $p['scannable'] ) : ?>
+												<span class="bans-ok">&#10003; Ready</span>
+												<span class="bans-fields">
+													(<?php echo esc_html( $p['flashscore_slug'] ); ?> /
+													<?php echo esc_html( $p['flashscore_id'] ); ?>)
+												</span>
+											<?php else : ?>
+												<span class="bans-missing">Missing slug/ID</span>
+											<?php endif; ?>
+											&mdash;
+											<a href="#" class="bans-edit-toggle" data-player="<?php echo (int) $p['id']; ?>">edit</a>
+										</span>
+										<div class="bans-edit-fields" data-player="<?php echo (int) $p['id']; ?>" hidden>
+											<span>
+												<label>Flashscore Slug</label>
+												<input type="text"
+													name="bans_slug[<?php echo (int) $p['id']; ?>]"
+													value="<?php echo esc_attr( $p['flashscore_slug'] ); ?>"
+													placeholder="e.g. paolo-banchero">
 											</span>
-										<?php else : ?>
-											<span class="bans-missing">Missing slug/ID</span>
-											&mdash; <a href="<?php echo esc_url( get_edit_post_link( $p['id'] ) ); ?>">edit player</a>
-										<?php endif; ?>
+											<span>
+												<label>Flashscore ID</label>
+												<input type="text"
+													name="bans_id[<?php echo (int) $p['id']; ?>]"
+													value="<?php echo esc_attr( $p['flashscore_id'] ); ?>"
+													placeholder="e.g. AbCdEf12">
+											</span>
+										</div>
 									</td>
 								</tr>
 							<?php endforeach; ?>
@@ -258,22 +286,81 @@ class BANS_Admin {
 				<button class="button">Send Test Email (Using Last Push + CSV)</button>
 			</form>
 		</div>
+
+		<script>
+		(function () {
+			// Select / deselect all include checkboxes.
+			const checkAll = document.getElementById('bans-check-all');
+			const boxes = Array.prototype.slice.call(
+				document.querySelectorAll('.bans-include-cb')
+			);
+
+			function syncCheckAll() {
+				if (!checkAll || !boxes.length) return;
+				const checked = boxes.filter(b => b.checked).length;
+				checkAll.checked = checked === boxes.length;
+				checkAll.indeterminate = checked > 0 && checked < boxes.length;
+			}
+
+			if (checkAll) {
+				checkAll.addEventListener('change', () => {
+					boxes.forEach(b => { b.checked = checkAll.checked; });
+				});
+			}
+			boxes.forEach(b => b.addEventListener('change', syncCheckAll));
+			syncCheckAll();
+
+			// Toggle the inline slug / ID inputs for a player.
+			document.querySelectorAll('.bans-edit-toggle').forEach(link => {
+				link.addEventListener('click', (e) => {
+					e.preventDefault();
+					const id = link.getAttribute('data-player');
+					const editor = document.querySelector(
+						'.bans-edit-fields[data-player="' + id + '"]'
+					);
+					if (!editor) return;
+					editor.hidden = !editor.hidden;
+					if (!editor.hidden) {
+						const first = editor.querySelector('input');
+						if (first) first.focus();
+					}
+				});
+			});
+		})();
+		</script>
 		<?php
 	}
 
 	/**
-	 * Persist the per-player "include in crawl" flag from the submitted
-	 * checkboxes. Any published player not checked is set to excluded.
+	 * Persist per-player crawl settings from the admin table: the "include in
+	 * crawl" checkboxes plus the inline Flashscore slug / ID fields. Any
+	 * published player not checked is set to excluded.
 	 */
-	private static function save_player_inclusion() {
+	private static function save_players() {
 		$checked = isset( $_POST['bans_include'] ) && is_array( $_POST['bans_include'] )
 			? array_map( 'intval', $_POST['bans_include'] )
 			: array();
 		$checked = array_flip( $checked );
 
+		$slugs = isset( $_POST['bans_slug'] ) && is_array( $_POST['bans_slug'] ) ? $_POST['bans_slug'] : array();
+		$ids   = isset( $_POST['bans_id'] ) && is_array( $_POST['bans_id'] ) ? $_POST['bans_id'] : array();
+
 		foreach ( BANS_Players::get_all_players() as $p ) {
-			$include = isset( $checked[ $p['id'] ] ) ? '1' : '';
-			update_post_meta( $p['id'], BANS_META_INCLUDE, $include );
+			$id = $p['id'];
+
+			$include = isset( $checked[ $id ] ) ? '1' : '';
+			update_post_meta( $id, BANS_META_INCLUDE, $include );
+
+			// Only touch the fields when the inputs were actually submitted for
+			// this player, so we never blank out meta for a row not on screen.
+			if ( array_key_exists( $id, $slugs ) ) {
+				$slug = sanitize_text_field( wp_unslash( $slugs[ $id ] ) );
+				update_post_meta( $id, BANS_META_SLUG, '' !== $slug ? sanitize_title( $slug ) : '' );
+			}
+			if ( array_key_exists( $id, $ids ) ) {
+				$fid = sanitize_text_field( wp_unslash( $ids[ $id ] ) );
+				update_post_meta( $id, BANS_META_ID, $fid );
+			}
 		}
 	}
 
