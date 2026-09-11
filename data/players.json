@@ -1,4 +1,100 @@
 {
-  "generated_at_utc": null,
-  "players": []
+    "generated_at_utc": "2026-09-11T20:39:24+00:00",
+    "players": [
+        {
+            "label": "Brandon Randolph",
+            "flashscore_slug": "randolph-brandon",
+            "flashscore_id": "0ftkXyvn"
+        },
+        {
+            "label": "Chris McCullough",
+            "flashscore_slug": "mccullough-chris",
+            "flashscore_id": "dxfa4xXl"
+        },
+        {
+            "label": "Colbey Ross",
+            "flashscore_slug": "ross-colbey",
+            "flashscore_id": "Q7XeS3d6"
+        },
+        {
+            "label": "Davion Warren",
+            "flashscore_slug": "warren-davion",
+            "flashscore_id": "YTYuEZ6F"
+        },
+        {
+            "label": "Elijah Harkless",
+            "flashscore_slug": "harkless-elijah",
+            "flashscore_id": "E3nOaAwo"
+        },
+        {
+            "label": "Elijah Hughes",
+            "flashscore_slug": "hughes-elijah",
+            "flashscore_id": "OtArGDAh"
+        },
+        {
+            "label": "Grant Anticevich",
+            "flashscore_slug": "anticevich-grant",
+            "flashscore_id": "pdAQgImJ"
+        },
+        {
+            "label": "Jarrett Culver",
+            "flashscore_slug": "culver-jarrett",
+            "flashscore_id": "jgdmVGWh"
+        },
+        {
+            "label": "Keion Brooks Jr.",
+            "flashscore_slug": "brooks-keion",
+            "flashscore_id": "CxVYeobc"
+        },
+        {
+            "label": "Noah Vonleh",
+            "flashscore_slug": "bryant-keyshawn",
+            "flashscore_id": "YHh0Il6N"
+        },
+        {
+            "label": "Norvel Pelle",
+            "flashscore_slug": "pelle-norvel",
+            "flashscore_id": "ngBd0LtJ"
+        },
+        {
+            "label": "Patrick McCaw",
+            "flashscore_slug": "mccaw-patrick",
+            "flashscore_id": "Y1Fmpybj"
+        },
+        {
+            "label": "Samson Johnson",
+            "flashscore_slug": "johnson-samson",
+            "flashscore_id": "0fTjFzbS"
+        },
+        {
+            "label": "Sheldon Edwards",
+            "flashscore_slug": "edwards-sheldon",
+            "flashscore_id": "867u6xiC"
+        },
+        {
+            "label": "Simi Shittu",
+            "flashscore_slug": "simisola-shittu",
+            "flashscore_id": "tbgTUS16"
+        },
+        {
+            "label": "Terry Roberts",
+            "flashscore_slug": "roberts-terry",
+            "flashscore_id": "K0mmce1n"
+        },
+        {
+            "label": "Toby Okani",
+            "flashscore_slug": "okani-toby",
+            "flashscore_id": "MN2ckRH5"
+        },
+        {
+            "label": "Trey Burke",
+            "flashscore_slug": "burke-trey",
+            "flashscore_id": "pMIFw7ta"
+        },
+        {
+            "label": "Tyson Etienne",
+            "flashscore_slug": "etienne-tyson",
+            "flashscore_id": "xj7UuKE3"
+        }
+    ]
 }
