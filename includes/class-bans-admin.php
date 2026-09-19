@@ -136,19 +136,23 @@ class BANS_Admin {
 		}
 
 		$settings = self::get_settings();
-		$rows     = BANS_Cron::get_result_rows( $settings );
+		$result   = BANS_Cron::send_test( $settings );
 
-		if ( empty( $rows ) ) {
-			self::add_notice( 'warning', 'No results found in the GitHub results file yet. Run the scraper (GitHub Actions) once so it commits data/latest.json.' );
-			self::redirect_back();
-		}
-
-		$sent = BANS_Cron::send_email_with_csv( $settings, $rows, true );
-
-		if ( $sent ) {
-			self::add_notice( 'updated', 'Test email sent successfully (using the latest results from GitHub). Check your inbox.' );
-		} else {
-			self::add_notice( 'error', 'Test email failed to send. Check debug.log for details.' );
+		switch ( $result['status'] ) {
+			case 'sent':
+				self::add_notice( 'updated', 'Test email sent successfully (using the latest results from GitHub). Check your inbox.' );
+				break;
+			case 'heartbeat':
+				self::add_notice( 'updated', 'The scraper ran but found no games (off-season / no fixtures), so a "no games today" heartbeat email was sent to your test address instead. Check your inbox.' );
+				break;
+			case 'error':
+				self::add_notice( 'error', 'Could not read the results file from GitHub: ' . $result['message'] );
+				break;
+			case 'heartbeat_failed':
+			case 'send_failed':
+			default:
+				self::add_notice( 'error', 'Test email failed to send. Check debug.log for details.' );
+				break;
 		}
 		self::redirect_back();
 	}
