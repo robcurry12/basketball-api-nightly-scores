@@ -7,6 +7,7 @@ class BANS_Admin {
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
+		add_action( 'admin_post_bans_save', array( __CLASS__, 'handle_save' ) );
 		add_action( 'admin_post_bans_send_test', array( __CLASS__, 'handle_send_test' ) );
 		add_action( 'admin_post_bans_sync_players', array( __CLASS__, 'handle_sync_players' ) );
 		add_action( 'admin_init', array( __CLASS__, 'maybe_migrate_legacy_players' ) );
@@ -153,6 +154,34 @@ class BANS_Admin {
 	}
 
 	/**
+	 * Save the settings form and sync the crawl list to GitHub.
+	 *
+	 * Runs on admin_post (before any admin HTML is sent) so the redirect
+	 * below actually fires. Processing this inside render_page() instead
+	 * left headers already sent, so wp_safe_redirect() was a no-op and the
+	 * page came back blank until a manual refresh.
+	 */
+	public static function handle_save() {
+		check_admin_referer( 'bans_save' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Insufficient permissions.' );
+		}
+
+		self::save_players();
+		update_option( self::OPTION_KEY, self::sanitize_settings(), false );
+
+		// Keep the repo's players.json in sync with what was just saved.
+		$sync = BANS_GitHub::push_players( self::get_settings() );
+		if ( $sync['ok'] ) {
+			self::add_notice( 'updated', 'Settings saved. ' . $sync['message'] );
+		} else {
+			self::add_notice( 'warning', 'Settings saved, but the GitHub sync did not run: ' . $sync['message'] );
+		}
+		self::redirect_back();
+	}
+
+	/**
 	 * Push the current crawl list to GitHub on demand.
 	 */
 	public static function handle_sync_players() {
@@ -173,21 +202,6 @@ class BANS_Admin {
 	}
 
 	public static function render_page() {
-		if ( isset( $_POST['save_bans'] ) ) {
-			check_admin_referer( 'bans_save' );
-			self::save_players();
-			update_option( self::OPTION_KEY, self::sanitize_settings(), false );
-
-			// Keep the repo's players.json in sync with what was just saved.
-			$sync = BANS_GitHub::push_players( self::get_settings() );
-			if ( $sync['ok'] ) {
-				self::add_notice( 'updated', 'Settings saved. ' . $sync['message'] );
-			} else {
-				self::add_notice( 'warning', 'Settings saved, but the GitHub sync did not run: ' . $sync['message'] );
-			}
-			self::redirect_back();
-		}
-
 		self::print_notice();
 
 		$settings = self::get_settings();
@@ -222,8 +236,9 @@ class BANS_Admin {
 				to send the nightly email. No inbound requests hit this site.
 			</p>
 
-			<form method="post">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<?php wp_nonce_field( 'bans_save' ); ?>
+				<input type="hidden" name="action" value="bans_save">
 
 				<h2>Players in the Nightly Crawl</h2>
 				<p style="max-width: 900px;">

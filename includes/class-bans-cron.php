@@ -20,10 +20,28 @@ class BANS_Cron {
 
 	public static function nightly() {
 		$settings = BANS_Admin::get_settings();
-		$rows     = self::get_result_rows( $settings );
+		$result   = BANS_GitHub::fetch_results( $settings );
 
+		// A failed fetch means the pipeline is broken (scraper hasn't committed
+		// yet, GitHub unreachable, bad JSON). Stay silent so a broken scrape is
+		// obvious by the *absence* of any email — don't send a false "all clear".
+		if ( empty( $result['ok'] ) ) {
+			$msg = isset( $result['message'] ) ? $result['message'] : 'unknown error';
+			error_log( '[BANS] DAILY: Results fetch failed (' . $msg . '). No email sent.' );
+			return;
+		}
+
+		$raw  = isset( $result['data']['rows'] ) && is_array( $result['data']['rows'] )
+			? $result['data']['rows']
+			: array();
+		$rows = self::format_rows( $raw );
+
+		// Fetch succeeded but no tracked player had a game in the scraper's
+		// window (off-season / no fixtures). Send a short heartbeat so a quiet
+		// night is distinguishable from a broken scrape.
 		if ( empty( $rows ) ) {
-			error_log( '[BANS] DAILY: No result rows available from GitHub. Email not sent.' );
+			error_log( '[BANS] DAILY: Fetch OK but 0 result rows. Sending off-season heartbeat.' );
+			self::send_heartbeat_email( $settings, $result['data'] );
 			return;
 		}
 
@@ -107,11 +125,13 @@ class BANS_Cron {
 		return sanitize_text_field( $iso_date );
 	}
 
-	public static function send_email_with_csv( $settings, $rows, $is_test = false ) {
-		$type = $is_test ? 'TEST' : 'DAILY';
-
-		error_log( "[BANS] Starting {$type} email send..." );
-
+	/**
+	 * Resolve the recipient list: the test address for test sends, otherwise
+	 * the comma-separated nightly list.
+	 *
+	 * @return string[] Trimmed, non-empty recipient addresses.
+	 */
+	private static function resolve_recipients( $settings, $is_test ) {
 		$recipients = array();
 
 		if ( $is_test ) {
@@ -124,7 +144,55 @@ class BANS_Cron {
 			}
 		}
 
-		$recipients = array_values( array_filter( $recipients ) );
+		return array_values( array_filter( $recipients ) );
+	}
+
+	/**
+	 * Send a short "no games today" heartbeat when the scrape succeeded but had
+	 * no rows, so a quiet night reads differently from a broken pipeline.
+	 */
+	public static function send_heartbeat_email( $settings, $data = array() ) {
+		error_log( '[BANS] Starting DAILY heartbeat email (no games to report)...' );
+
+		$recipients = self::resolve_recipients( $settings, false );
+
+		if ( empty( $recipients ) ) {
+			error_log( '[BANS] DAILY heartbeat: No recipients configured. Email not sent.' );
+			return false;
+		}
+
+		$scraped_at = isset( $data['generated_at_utc'] ) && '' !== $data['generated_at_utc']
+			? sanitize_text_field( (string) $data['generated_at_utc'] )
+			: '';
+
+		$body  = "No tracked players had a game in the last day, so there are no stats to report tonight.\n\n";
+		$body .= '' !== $scraped_at
+			? "The scraper ran successfully (results generated {$scraped_at}) — this is a quiet night, likely off-season or no fixtures, not an error.\n\n"
+			: "The scraper ran but produced no results for the last day — likely off-season or no fixtures, not an error.\n\n";
+		$body .= "You'll get the usual stats email automatically once games resume.";
+
+		$sent = wp_mail(
+			$recipients,
+			'Basketball Nightly Stats — no games today',
+			$body,
+			array( 'Content-Type: text/plain; charset=UTF-8' )
+		);
+
+		if ( $sent ) {
+			error_log( '[BANS] DAILY heartbeat: wp_mail() returned TRUE - email handed off to mail system.' );
+		} else {
+			error_log( '[BANS] DAILY heartbeat: wp_mail() returned FALSE - email failed to send.' );
+		}
+
+		return (bool) $sent;
+	}
+
+	public static function send_email_with_csv( $settings, $rows, $is_test = false ) {
+		$type = $is_test ? 'TEST' : 'DAILY';
+
+		error_log( "[BANS] Starting {$type} email send..." );
+
+		$recipients = self::resolve_recipients( $settings, $is_test );
 
 		if ( empty( $recipients ) ) {
 			error_log( "[BANS] {$type}: No recipients configured. Email not sent." );
