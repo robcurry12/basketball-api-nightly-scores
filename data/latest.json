@@ -1,5 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-09-19T14:01:46.156Z",
-  "rows": []
+  "generated_at_utc": "2026-09-20T12:05:34.080Z",
+  "rows": [
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-09-19",
+      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/trier-QL5yPwmQ/?mid=jsSwNgie",
+      "minutes": "25:23",
+      "points": 19,
+      "rebounds": 3,
+      "assists": 1,
+      "steals": 3,
+      "turnovers": 0
+    }
+  ]
 }
