@@ -1,28 +1,5 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-09-21T13:43:34.332Z",
-  "rows": [
-    {
-      "player": "Elijah Hughes",
-      "game_date": "2026-09-20",
-      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/ulm-fcks1zeJ/?mid=StCByg6l",
-      "minutes": "28:43",
-      "points": 12,
-      "rebounds": 5,
-      "assists": 2,
-      "steals": 0,
-      "turnovers": 0
-    },
-    {
-      "player": "Terry Roberts",
-      "game_date": "2026-09-20",
-      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/liverpool-SMATsK2F/?mid=n70mzWPq",
-      "minutes": "20:21",
-      "points": 16,
-      "rebounds": 3,
-      "assists": 4,
-      "steals": 2,
-      "turnovers": 4
-    }
-  ]
+  "generated_at_utc": "2026-09-22T12:27:04.616Z",
+  "rows": []
 }
