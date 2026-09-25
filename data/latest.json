@@ -1,5 +1,28 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-09-24T12:36:52.537Z",
-  "rows": []
+  "generated_at_utc": "2026-09-25T12:38:20.047Z",
+  "rows": [
+    {
+      "player": "Elijah Hughes",
+      "game_date": "2026-09-24",
+      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/rostock-SnRANHqC/?mid=YaUxuSCt",
+      "minutes": "24:13",
+      "points": 16,
+      "rebounds": 4,
+      "assists": 0,
+      "steals": 1,
+      "turnovers": 1
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-09-24",
+      "game_url": "https://www.flashscore.com/match/basketball/panathinaikos-bqRyXX9C/paris-CdCP6AWf/?mid=nc1I0zXj",
+      "minutes": "18:49",
+      "points": 17,
+      "rebounds": 1,
+      "assists": 2,
+      "steals": 0,
+      "turnovers": 0
+    }
+  ]
 }
