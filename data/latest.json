@@ -1,17 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-09-27T12:52:09.198Z",
+  "generated_at_utc": "2026-09-28T15:03:47.614Z",
   "rows": [
     {
-      "player": "Elijah Hughes",
-      "game_date": "2026-09-26",
-      "game_url": "https://www.flashscore.com/match/basketball/bamberg-baskets-8CRfmy39/ludwigsburg-rZFPnFXL/?mid=S0IBtulo",
-      "minutes": "24:16",
-      "points": 16,
-      "rebounds": 5,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 2
+      "player": "Colbey Ross",
+      "game_date": "2026-09-27",
+      "game_url": "https://www.flashscore.com/match/basketball/milan-tUT82gR9/pallacanestro-trieste-f7SJ0Orj/?mid=QmhaRL0S",
+      "minutes": "27'",
+      "points": 17,
+      "rebounds": 1,
+      "assists": 7,
+      "steals": 2,
+      "turnovers": 1
     },
     {
       "player": "Jarrett Culver",
@@ -21,6 +21,28 @@
       "points": 24,
       "rebounds": 8,
       "assists": 5,
+      "steals": 0,
+      "turnovers": 2
+    },
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-09-27",
+      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/rostock-SnRANHqC/?mid=Ey7D00uH",
+      "minutes": "25:23",
+      "points": 5,
+      "rebounds": 4,
+      "assists": 0,
+      "steals": 1,
+      "turnovers": 2
+    },
+    {
+      "player": "Terry Roberts",
+      "game_date": "2026-09-27",
+      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/sheffield-sharks-bDk10qgT/?mid=OlgSn99k",
+      "minutes": "32:15",
+      "points": 17,
+      "rebounds": 2,
+      "assists": 2,
       "steals": 0,
       "turnovers": 2
     }
