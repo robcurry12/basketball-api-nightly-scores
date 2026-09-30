@@ -1,5 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-09-29T13:50:55.659Z",
-  "rows": []
+  "generated_at_utc": "2026-09-30T13:25:00.566Z",
+  "rows": [
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-09-29",
+      "game_url": "https://www.flashscore.com/match/basketball/paris-CdCP6AWf/partizan-mozzart-bet-GAiz1YL6/?mid=2RGMX2J8",
+      "minutes": "17:43",
+      "points": 7,
+      "rebounds": 2,
+      "assists": 2,
+      "steals": 1,
+      "turnovers": 4
+    }
+  ]
 }
