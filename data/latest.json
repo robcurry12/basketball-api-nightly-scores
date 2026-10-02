@@ -1,5 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-01T14:18:25.759Z",
-  "rows": []
+  "generated_at_utc": "2026-10-02T13:40:38.539Z",
+  "rows": [
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-10-01",
+      "game_url": "https://www.flashscore.com/match/basketball/paris-CdCP6AWf/zalgiris-kaunas-6JbDYvUs/?mid=ruyZRXnm",
+      "minutes": "10:18",
+      "points": 0,
+      "rebounds": 2,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 2
+    }
+  ]
 }
