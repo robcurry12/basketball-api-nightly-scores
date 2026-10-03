@@ -1,17 +1,28 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-02T13:40:38.539Z",
+  "generated_at_utc": "2026-10-03T12:18:58.708Z",
   "rows": [
     {
-      "player": "Tyson Etienne",
-      "game_date": "2026-10-01",
-      "game_url": "https://www.flashscore.com/match/basketball/paris-CdCP6AWf/zalgiris-kaunas-6JbDYvUs/?mid=ruyZRXnm",
-      "minutes": "10:18",
-      "points": 0,
-      "rebounds": 2,
-      "assists": 1,
+      "player": "Jarrett Culver",
+      "game_date": "2026-10-03",
+      "game_url": "https://www.flashscore.com/match/basketball/levanga-hokkaido-AL8SDto4/sendai-zsHYiPlb/?mid=hvhwaRx8",
+      "minutes": "35:46",
+      "points": 26,
+      "rebounds": 5,
+      "assists": 8,
+      "steals": 3,
+      "turnovers": 3
+    },
+    {
+      "player": "Terry Roberts",
+      "game_date": "2026-10-02",
+      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/newcastle-eagles-dr6g4o9A/?mid=8Et8ange",
+      "minutes": "27:23",
+      "points": 11,
+      "rebounds": 6,
+      "assists": 3,
       "steals": 0,
-      "turnovers": 2
+      "turnovers": 3
     }
   ]
 }
