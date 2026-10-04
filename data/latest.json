@@ -1,27 +1,16 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-03T12:18:58.708Z",
+  "generated_at_utc": "2026-10-04T13:05:44.640Z",
   "rows": [
     {
       "player": "Jarrett Culver",
-      "game_date": "2026-10-03",
-      "game_url": "https://www.flashscore.com/match/basketball/levanga-hokkaido-AL8SDto4/sendai-zsHYiPlb/?mid=hvhwaRx8",
-      "minutes": "35:46",
-      "points": 26,
-      "rebounds": 5,
-      "assists": 8,
-      "steals": 3,
-      "turnovers": 3
-    },
-    {
-      "player": "Terry Roberts",
-      "game_date": "2026-10-02",
-      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/newcastle-eagles-dr6g4o9A/?mid=8Et8ange",
-      "minutes": "27:23",
-      "points": 11,
-      "rebounds": 6,
-      "assists": 3,
-      "steals": 0,
+      "game_date": "2026-10-04",
+      "game_url": "https://www.flashscore.com/match/basketball/levanga-hokkaido-AL8SDto4/sendai-zsHYiPlb/?mid=GEKe8jXI",
+      "minutes": "31:09",
+      "points": 28,
+      "rebounds": 9,
+      "assists": 4,
+      "steals": 2,
       "turnovers": 3
     }
   ]
