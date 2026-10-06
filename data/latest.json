@@ -1,59 +1,15 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-05T15:39:08.056Z",
+  "generated_at_utc": "2026-10-06T14:01:08.701Z",
   "rows": [
     {
-      "player": "Chris McCullough",
-      "game_date": "2026-10-04",
-      "game_url": "https://www.flashscore.com/match/basketball/seoul-thunders-bq6XAeIl/suwon-kt-8UZZ1qjQ/?mid=ri50ftK5",
-      "minutes": "23:55",
-      "points": 19,
-      "rebounds": 8,
-      "assists": 3,
-      "steals": 2,
-      "turnovers": 0
-    },
-    {
-      "player": "Colbey Ross",
-      "game_date": "2026-10-04",
-      "game_url": "https://www.flashscore.com/match/basketball/pallacanestro-trieste-f7SJ0Orj/venezia-nR1rGe9M/?mid=ABQKswin",
-      "minutes": "27'",
-      "points": 18,
+      "player": "Sheldon Edwards",
+      "game_date": "2026-10-05",
+      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/vechta-vy2cTqpo/?mid=6kncDbtK",
+      "minutes": "18:38",
+      "points": 16,
       "rebounds": 4,
-      "assists": 4,
-      "steals": 0,
-      "turnovers": 2
-    },
-    {
-      "player": "Elijah Hughes",
-      "game_date": "2026-10-04",
-      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/trier-QL5yPwmQ/?mid=EeaBkelD",
-      "minutes": "20:22",
-      "points": 0,
-      "rebounds": 3,
       "assists": 1,
-      "steals": 1,
-      "turnovers": 0
-    },
-    {
-      "player": "Jarrett Culver",
-      "game_date": "2026-10-04",
-      "game_url": "https://www.flashscore.com/match/basketball/levanga-hokkaido-AL8SDto4/sendai-zsHYiPlb/?mid=GEKe8jXI",
-      "minutes": "31:09",
-      "points": 28,
-      "rebounds": 9,
-      "assists": 4,
-      "steals": 2,
-      "turnovers": 3
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-10-04",
-      "game_url": "https://www.flashscore.com/match/basketball/le-mans-Qqv37Lsk/paris-CdCP6AWf/?mid=SfDFcPdl",
-      "minutes": "22:49",
-      "points": 23,
-      "rebounds": 2,
-      "assists": 2,
       "steals": 1,
       "turnovers": 1
     }
