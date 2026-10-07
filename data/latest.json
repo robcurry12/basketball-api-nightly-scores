@@ -1,17 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-06T14:01:08.701Z",
+  "generated_at_utc": "2026-10-07T14:18:28.492Z",
   "rows": [
     {
-      "player": "Sheldon Edwards",
-      "game_date": "2026-10-05",
-      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/vechta-vy2cTqpo/?mid=6kncDbtK",
-      "minutes": "18:38",
-      "points": 16,
-      "rebounds": 4,
-      "assists": 1,
+      "player": "Jarrett Culver",
+      "game_date": "2026-10-07",
+      "game_url": "https://www.flashscore.com/match/basketball/altiri-chiba-2VaVmkFP/sendai-zsHYiPlb/?mid=E5AZx2xA",
+      "minutes": "29:04",
+      "points": 18,
+      "rebounds": 5,
+      "assists": 3,
       "steals": 1,
-      "turnovers": 1
+      "turnovers": 3
     }
   ]
 }
