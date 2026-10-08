@@ -1,7 +1,29 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-07T14:18:28.492Z",
+  "generated_at_utc": "2026-10-08T14:27:50.977Z",
   "rows": [
+    {
+      "player": "Andrew Harrison",
+      "game_date": "2026-10-08",
+      "game_url": "https://www.flashscore.com/match/basketball/mineros-de-zacatecas-QJxzQ73h/santos-UZqDP47H/?mid=OzSm9wDs",
+      "minutes": "28:55",
+      "points": 17,
+      "rebounds": 3,
+      "assists": 6,
+      "steals": 0,
+      "turnovers": 0
+    },
+    {
+      "player": "Ian Dubose",
+      "game_date": "2026-10-07",
+      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/benfica-IuodFyui/?mid=Y9wCpd1E",
+      "minutes": "24:29",
+      "points": 5,
+      "rebounds": 3,
+      "assists": 3,
+      "steals": 2,
+      "turnovers": 2
+    },
     {
       "player": "Jarrett Culver",
       "game_date": "2026-10-07",
@@ -12,6 +34,17 @@
       "assists": 3,
       "steals": 1,
       "turnovers": 3
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-10-07",
+      "game_url": "https://www.flashscore.com/match/basketball/lyon-villeurbanne-KrXB5aC1/paris-CdCP6AWf/?mid=l2LUzTVH",
+      "minutes": "23:15",
+      "points": 27,
+      "rebounds": 0,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 1
     }
   ]
 }
