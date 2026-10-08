@@ -1,6 +1,21 @@
 {
-    "generated_at_utc": "2026-10-08T13:16:02+00:00",
+    "generated_at_utc": "2026-10-08T13:31:05+00:00",
     "players": [
+        {
+            "label": "Adam Kemp",
+            "flashscore_slug": "kemp-adam",
+            "flashscore_id": "MFw93ruQ"
+        },
+        {
+            "label": "AJ Smith",
+            "flashscore_slug": "smith-adam",
+            "flashscore_id": "ShnmHaT0"
+        },
+        {
+            "label": "Andrew Harrison",
+            "flashscore_slug": "harrison-andrew",
+            "flashscore_id": "GAtis3zH"
+        },
         {
             "label": "Brandon Randolph",
             "flashscore_slug": "randolph-brandon",
@@ -15,11 +30,6 @@
             "label": "Colbey Ross",
             "flashscore_slug": "ross-colbey",
             "flashscore_id": "Q7XeS3d6"
-        },
-        {
-            "label": "Davion Warren",
-            "flashscore_slug": "warren-davion",
-            "flashscore_id": "YTYuEZ6F"
         },
         {
             "label": "Elijah Harkless",
