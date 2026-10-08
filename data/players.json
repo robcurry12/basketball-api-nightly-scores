@@ -1,5 +1,5 @@
 {
-    "generated_at_utc": "2026-10-08T13:31:05+00:00",
+    "generated_at_utc": "2026-10-08T13:32:02+00:00",
     "players": [
         {
             "label": "Adam Kemp",
@@ -22,6 +22,16 @@
             "flashscore_id": "0ftkXyvn"
         },
         {
+            "label": "Bryce Harris",
+            "flashscore_slug": "harris-bryce",
+            "flashscore_id": "fmwE3Xwn"
+        },
+        {
+            "label": "Cam Parker",
+            "flashscore_slug": "parker-cameron",
+            "flashscore_id": "tpeSWMqQ"
+        },
+        {
             "label": "Chris McCullough",
             "flashscore_slug": "mccullough-chris",
             "flashscore_id": "dxfa4xXl"
@@ -42,14 +52,29 @@
             "flashscore_id": "OtArGDAh"
         },
         {
+            "label": "Fousseyni Drame",
+            "flashscore_slug": "drame-fousseyni",
+            "flashscore_id": "8bSBfIEQ"
+        },
+        {
             "label": "Grant Anticevich",
             "flashscore_slug": "anticevich-grant",
             "flashscore_id": "pdAQgImJ"
         },
         {
+            "label": "Ian Dubose",
+            "flashscore_slug": "dubose-ian",
+            "flashscore_id": "GWQ4W2cd"
+        },
+        {
             "label": "Jarrett Culver",
             "flashscore_slug": "culver-jarrett",
             "flashscore_id": "jgdmVGWh"
+        },
+        {
+            "label": "Jordan Henderson",
+            "flashscore_slug": "henderson-jordan",
+            "flashscore_id": "6JUFFcWT"
         },
         {
             "label": "Keion Brooks Jr.",
@@ -90,16 +115,6 @@
             "label": "Terry Roberts",
             "flashscore_slug": "roberts-terry",
             "flashscore_id": "K0mmce1n"
-        },
-        {
-            "label": "Toby Okani",
-            "flashscore_slug": "okani-toby",
-            "flashscore_id": "MN2ckRH5"
-        },
-        {
-            "label": "Trey Burke",
-            "flashscore_slug": "burke-trey",
-            "flashscore_id": "pMIFw7ta"
         },
         {
             "label": "Tyson Etienne",
