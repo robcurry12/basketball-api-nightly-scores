@@ -1,17 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-09T14:13:39.985Z",
+  "generated_at_utc": "2026-10-10T13:22:41.890Z",
   "rows": [
     {
-      "player": "Andrew Harrison",
-      "game_date": "2026-10-08",
-      "game_url": "https://www.flashscore.com/match/basketball/mineros-de-zacatecas-QJxzQ73h/santos-UZqDP47H/?mid=OzSm9wDs",
-      "minutes": "28:55",
-      "points": 17,
-      "rebounds": 3,
-      "assists": 6,
+      "player": "Adam Kemp",
+      "game_date": "2026-10-09",
+      "game_url": "https://www.flashscore.com/match/basketball/krosno-WOTk3dLH/pelplin-r5U3bW50/?mid=f1VxjXjD",
+      "minutes": "24:31",
+      "points": 4,
+      "rebounds": 8,
+      "assists": 2,
       "steals": 0,
-      "turnovers": 0
+      "turnovers": 3
     },
     {
       "player": "Chris McCullough",
