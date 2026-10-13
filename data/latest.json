@@ -1,71 +1,16 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-12T16:35:21.768Z",
+  "generated_at_utc": "2026-10-13T14:53:20.250Z",
   "rows": [
     {
       "player": "Andrew Harrison",
-      "game_date": "2026-10-12",
-      "game_url": "https://www.flashscore.com/match/basketball/abejas-jTClliE4/santos-UZqDP47H/?mid=lhCRyZrS",
-      "minutes": "32:52",
+      "game_date": "2026-10-13",
+      "game_url": "https://www.flashscore.com/match/basketball/abejas-jTClliE4/santos-UZqDP47H/?mid=pOccWC6k",
+      "minutes": "33:39",
       "points": 15,
-      "rebounds": 6,
+      "rebounds": 4,
       "assists": 5,
       "steals": 1,
-      "turnovers": 2
-    },
-    {
-      "player": "Chris McCullough",
-      "game_date": "2026-10-11",
-      "game_url": "https://www.flashscore.com/match/basketball/goyang-sono-lYbp8g27/seoul-thunders-bq6XAeIl/?mid=WEtwfFuT",
-      "minutes": "21:53",
-      "points": 14,
-      "rebounds": 6,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 0
-    },
-    {
-      "player": "Elijah Hughes",
-      "game_date": "2026-10-11",
-      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/ludwigsburg-rZFPnFXL/?mid=zVJGIgIa",
-      "minutes": "26:00",
-      "points": 22,
-      "rebounds": 4,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 0
-    },
-    {
-      "player": "Jarrett Culver",
-      "game_date": "2026-10-11",
-      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/tokyo-sunrockers-zaKcE2Gi/?mid=OzzzKsXN",
-      "minutes": "33:56",
-      "points": 32,
-      "rebounds": 10,
-      "assists": 1,
-      "steals": 2,
-      "turnovers": 3
-    },
-    {
-      "player": "Sheldon Edwards",
-      "game_date": "2026-10-11",
-      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/ludwigsburg-rZFPnFXL/?mid=zVJGIgIa",
-      "minutes": "24:33",
-      "points": 14,
-      "rebounds": 4,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 1
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-10-11",
-      "game_url": "https://www.flashscore.com/match/basketball/paris-CdCP6AWf/strasbourg-Srews2dH/?mid=pYb38tB6",
-      "minutes": "23:53",
-      "points": 17,
-      "rebounds": 2,
-      "assists": 3,
-      "steals": 0,
       "turnovers": 3
     }
   ]
