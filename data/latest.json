@@ -1,7 +1,29 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-15T12:32:18.760Z",
+  "generated_at_utc": "2026-10-16T12:10:04.027Z",
   "rows": [
+    {
+      "player": "Andrew Harrison",
+      "game_date": "2026-10-16",
+      "game_url": "https://www.flashscore.com/match/basketball/abejas-jTClliE4/santos-UZqDP47H/?mid=WORuu0BF",
+      "minutes": "33:00",
+      "points": 12,
+      "rebounds": 5,
+      "assists": 6,
+      "steals": 1,
+      "turnovers": 4
+    },
+    {
+      "player": "Chris McCullough",
+      "game_date": "2026-10-15",
+      "game_url": "https://www.flashscore.com/match/basketball/lg-sakers-fBat9Zn1/seoul-thunders-bq6XAeIl/?mid=fXmrj6ve",
+      "minutes": "21:59",
+      "points": 14,
+      "rebounds": 13,
+      "assists": 4,
+      "steals": 0,
+      "turnovers": 3
+    },
     {
       "player": "Elijah Harkless",
       "game_date": "2026-10-15",
@@ -12,28 +34,6 @@
       "assists": 0,
       "steals": 0,
       "turnovers": 1
-    },
-    {
-      "player": "Ian Dubose",
-      "game_date": "2026-10-14",
-      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/geneva-lions-ML34PI1F/?mid=6NyKrzWQ",
-      "minutes": "22:33",
-      "points": 10,
-      "rebounds": 2,
-      "assists": 3,
-      "steals": 0,
-      "turnovers": 2
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-10-14",
-      "game_url": "https://www.flashscore.com/match/basketball/paris-CdCP6AWf/virtus-bologna-YwDFycYd/?mid=Kd2RAZCl",
-      "minutes": "27:50",
-      "points": 23,
-      "rebounds": 2,
-      "assists": 7,
-      "steals": 1,
-      "turnovers": 0
     }
   ]
 }
