@@ -1,6 +1,6 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-16T12:10:04.027Z",
+  "generated_at_utc": "2026-10-17T11:29:12.769Z",
   "rows": [
     {
       "player": "Andrew Harrison",
@@ -15,25 +15,58 @@
     },
     {
       "player": "Chris McCullough",
-      "game_date": "2026-10-15",
-      "game_url": "https://www.flashscore.com/match/basketball/lg-sakers-fBat9Zn1/seoul-thunders-bq6XAeIl/?mid=fXmrj6ve",
-      "minutes": "21:59",
+      "game_date": "2026-10-17",
+      "game_url": "https://www.flashscore.com/match/basketball/seoul-thunders-bq6XAeIl/wonju-db-promy-pldXEHfR/?mid=0lspARVQ",
+      "minutes": "22:46",
       "points": 14,
-      "rebounds": 13,
+      "rebounds": 8,
       "assists": 4,
-      "steals": 0,
-      "turnovers": 3
+      "steals": 1,
+      "turnovers": 2
     },
     {
       "player": "Elijah Harkless",
-      "game_date": "2026-10-15",
-      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/minnesota-timberwolves-KjBIVQcI/?mid=U1ngw0Y0",
-      "minutes": "06:57",
-      "points": 0,
+      "game_date": "2026-10-17",
+      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/toronto-raptors-CxtbCMdU/?mid=SbTtlHnJ",
+      "minutes": "06:48",
+      "points": 7,
       "rebounds": 0,
-      "assists": 0,
-      "steals": 0,
+      "assists": 1,
+      "steals": 1,
+      "turnovers": 0
+    },
+    {
+      "player": "Jarrett Culver",
+      "game_date": "2026-10-17",
+      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/utsunomiya-brex-WU9OEMVc/?mid=l6VGP6Kq",
+      "minutes": "34:51",
+      "points": 34,
+      "rebounds": 8,
+      "assists": 4,
+      "steals": 1,
       "turnovers": 1
+    },
+    {
+      "player": "Terry Roberts",
+      "game_date": "2026-10-16",
+      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/sheffield-sharks-bDk10qgT/?mid=lniEFbqg",
+      "minutes": "26:42",
+      "points": 17,
+      "rebounds": 3,
+      "assists": 3,
+      "steals": 2,
+      "turnovers": 2
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-10-16",
+      "game_url": "https://www.flashscore.com/match/basketball/crvena-zvezda-meridianbet-6uAuZ6Pt/paris-CdCP6AWf/?mid=IgqFLjR6",
+      "minutes": "29:13",
+      "points": 24,
+      "rebounds": 3,
+      "assists": 7,
+      "steals": 2,
+      "turnovers": 4
     }
   ]
 }
