@@ -1,18 +1,7 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-17T11:29:12.769Z",
+  "generated_at_utc": "2026-10-18T12:00:21.887Z",
   "rows": [
-    {
-      "player": "Andrew Harrison",
-      "game_date": "2026-10-16",
-      "game_url": "https://www.flashscore.com/match/basketball/abejas-jTClliE4/santos-UZqDP47H/?mid=WORuu0BF",
-      "minutes": "33:00",
-      "points": 12,
-      "rebounds": 5,
-      "assists": 6,
-      "steals": 1,
-      "turnovers": 4
-    },
     {
       "player": "Chris McCullough",
       "game_date": "2026-10-17",
@@ -36,6 +25,17 @@
       "turnovers": 0
     },
     {
+      "player": "Grant Anticevich",
+      "game_date": "2026-10-17",
+      "game_url": "https://www.flashscore.com/match/basketball/leiden-Ch1QroKQ/okapi-aalst-dI2iPEEM/?mid=6c4CwkB4",
+      "minutes": "27:22",
+      "points": 10,
+      "rebounds": 3,
+      "assists": 4,
+      "steals": 0,
+      "turnovers": 1
+    },
+    {
       "player": "Jarrett Culver",
       "game_date": "2026-10-17",
       "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/utsunomiya-brex-WU9OEMVc/?mid=l6VGP6Kq",
@@ -45,28 +45,6 @@
       "assists": 4,
       "steals": 1,
       "turnovers": 1
-    },
-    {
-      "player": "Terry Roberts",
-      "game_date": "2026-10-16",
-      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/sheffield-sharks-bDk10qgT/?mid=lniEFbqg",
-      "minutes": "26:42",
-      "points": 17,
-      "rebounds": 3,
-      "assists": 3,
-      "steals": 2,
-      "turnovers": 2
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-10-16",
-      "game_url": "https://www.flashscore.com/match/basketball/crvena-zvezda-meridianbet-6uAuZ6Pt/paris-CdCP6AWf/?mid=IgqFLjR6",
-      "minutes": "29:13",
-      "points": 24,
-      "rebounds": 3,
-      "assists": 7,
-      "steals": 2,
-      "turnovers": 4
     }
   ]
 }
