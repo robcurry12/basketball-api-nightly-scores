@@ -1,50 +1,94 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-18T12:00:21.887Z",
+  "generated_at_utc": "2026-10-19T14:27:58.076Z",
   "rows": [
     {
-      "player": "Chris McCullough",
-      "game_date": "2026-10-17",
-      "game_url": "https://www.flashscore.com/match/basketball/seoul-thunders-bq6XAeIl/wonju-db-promy-pldXEHfR/?mid=0lspARVQ",
-      "minutes": "22:46",
+      "player": "Adam Kemp",
+      "game_date": "2026-10-18",
+      "game_url": "https://www.flashscore.com/match/basketball/krosno-WOTk3dLH/ks-spojnia-stargard-AefsNJK6/?mid=OfI2BvJj",
+      "minutes": "24:14",
+      "points": 16,
+      "rebounds": 5,
+      "assists": 1,
+      "steals": 1,
+      "turnovers": 1
+    },
+    {
+      "player": "Colbey Ross",
+      "game_date": "2026-10-18",
+      "game_url": "https://www.flashscore.com/match/basketball/cantu-4jexwVmq/pallacanestro-trieste-f7SJ0Orj/?mid=pCNsf7t9",
+      "minutes": "20'",
+      "points": 6,
+      "rebounds": 1,
+      "assists": 9,
+      "steals": 0,
+      "turnovers": 2
+    },
+    {
+      "player": "Elijah Hughes",
+      "game_date": "2026-10-18",
+      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/vechta-vy2cTqpo/?mid=MshqHLP1",
+      "minutes": "27:48",
       "points": 14,
-      "rebounds": 8,
-      "assists": 4,
+      "rebounds": 3,
+      "assists": 2,
+      "steals": 0,
+      "turnovers": 0
+    },
+    {
+      "player": "Ian Dubose",
+      "game_date": "2026-10-18",
+      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/vaerlose-pWlzWrlL/?mid=fwqrSK65",
+      "minutes": "8:27",
+      "points": 9,
+      "rebounds": 3,
+      "assists": 2,
+      "steals": 0,
+      "turnovers": 3
+    },
+    {
+      "player": "Jarrett Culver",
+      "game_date": "2026-10-19",
+      "game_url": "https://www.flashscore.com/match/basketball/kobe-QTmk06AO/sendai-zsHYiPlb/?mid=x4qVwcuf",
+      "minutes": "30:39",
+      "points": 38,
+      "rebounds": 5,
+      "assists": 3,
+      "steals": 1,
+      "turnovers": 3
+    },
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-10-18",
+      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/chemnitz-hInQh5sp/?mid=6e9igjZP",
+      "minutes": "25:52",
+      "points": 14,
+      "rebounds": 6,
+      "assists": 1,
       "steals": 1,
       "turnovers": 2
     },
     {
-      "player": "Elijah Harkless",
-      "game_date": "2026-10-17",
-      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/toronto-raptors-CxtbCMdU/?mid=SbTtlHnJ",
-      "minutes": "06:48",
-      "points": 7,
-      "rebounds": 0,
-      "assists": 1,
-      "steals": 1,
-      "turnovers": 0
-    },
-    {
-      "player": "Grant Anticevich",
-      "game_date": "2026-10-17",
-      "game_url": "https://www.flashscore.com/match/basketball/leiden-Ch1QroKQ/okapi-aalst-dI2iPEEM/?mid=6c4CwkB4",
-      "minutes": "27:22",
-      "points": 10,
+      "player": "Terry Roberts",
+      "game_date": "2026-10-18",
+      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/manchester-basketball-dbGkjDYQ/?mid=65WoUcbn",
+      "minutes": "27:28",
+      "points": 12,
       "rebounds": 3,
-      "assists": 4,
+      "assists": 5,
       "steals": 0,
-      "turnovers": 1
+      "turnovers": 5
     },
     {
-      "player": "Jarrett Culver",
-      "game_date": "2026-10-17",
-      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/utsunomiya-brex-WU9OEMVc/?mid=l6VGP6Kq",
-      "minutes": "34:51",
-      "points": 34,
-      "rebounds": 8,
-      "assists": 4,
-      "steals": 1,
-      "turnovers": 1
+      "player": "Tyson Etienne",
+      "game_date": "2026-10-18",
+      "game_url": "https://www.flashscore.com/match/basketball/boulazac-pGtBbX8B/paris-CdCP6AWf/?mid=KlS5A4tJ",
+      "minutes": "26:17",
+      "points": 26,
+      "rebounds": 0,
+      "assists": 3,
+      "steals": 0,
+      "turnovers": 3
     }
   ]
 }
