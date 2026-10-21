@@ -1,17 +1,5 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-20T12:36:40.741Z",
-  "rows": [
-    {
-      "player": "Jarrett Culver",
-      "game_date": "2026-10-19",
-      "game_url": "https://www.flashscore.com/match/basketball/kobe-QTmk06AO/sendai-zsHYiPlb/?mid=x4qVwcuf",
-      "minutes": "30:39",
-      "points": 38,
-      "rebounds": 5,
-      "assists": 3,
-      "steals": 1,
-      "turnovers": 3
-    }
-  ]
+  "generated_at_utc": "2026-10-21T12:48:01.653Z",
+  "rows": []
 }
