@@ -1,5 +1,39 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-21T12:48:01.653Z",
-  "rows": []
+  "generated_at_utc": "2026-10-22T12:58:45.095Z",
+  "rows": [
+    {
+      "player": "Chris McCullough",
+      "game_date": "2026-10-21",
+      "game_url": "https://www.flashscore.com/match/basketball/kcc-egis-zHyS35LD/seoul-thunders-bq6XAeIl/?mid=tSO2FM76",
+      "minutes": "23:02",
+      "points": 15,
+      "rebounds": 7,
+      "assists": 3,
+      "steals": 1,
+      "turnovers": 1
+    },
+    {
+      "player": "Ian Dubose",
+      "game_date": "2026-10-21",
+      "game_url": "https://www.flashscore.com/match/basketball/absheron-lions-IVNl3wpI/bakken-bears-vRsVzCMd/?mid=x6SkwEgl",
+      "minutes": "28:41",
+      "points": 8,
+      "rebounds": 2,
+      "assists": 7,
+      "steals": 1,
+      "turnovers": 2
+    },
+    {
+      "player": "Jarrett Culver",
+      "game_date": "2026-10-22",
+      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/yokohama-MJk8Au29/?mid=hYKdJPb3",
+      "minutes": "27:45",
+      "points": 20,
+      "rebounds": 6,
+      "assists": 2,
+      "steals": 2,
+      "turnovers": 3
+    }
+  ]
 }
