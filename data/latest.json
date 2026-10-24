@@ -1,17 +1,39 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-23T12:29:35.098Z",
+  "generated_at_utc": "2026-10-24T11:54:56.297Z",
   "rows": [
     {
+      "player": "Chris McCullough",
+      "game_date": "2026-10-24",
+      "game_url": "https://www.flashscore.com/match/basketball/mobis-phoebus-GzqLBy3r/seoul-thunders-bq6XAeIl/?mid=IR8zULMa",
+      "minutes": "24:11",
+      "points": 21,
+      "rebounds": 7,
+      "assists": 3,
+      "steals": 1,
+      "turnovers": 2
+    },
+    {
       "player": "Jarrett Culver",
-      "game_date": "2026-10-22",
-      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/yokohama-MJk8Au29/?mid=hYKdJPb3",
-      "minutes": "27:45",
+      "game_date": "2026-10-24",
+      "game_url": "https://www.flashscore.com/match/basketball/brave-thunders-21lDfhpq/sendai-zsHYiPlb/?mid=G8keybKl",
+      "minutes": "29:32",
       "points": 20,
-      "rebounds": 6,
-      "assists": 2,
-      "steals": 2,
-      "turnovers": 3
+      "rebounds": 4,
+      "assists": 6,
+      "steals": 1,
+      "turnovers": 2
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-10-23",
+      "game_url": "https://www.flashscore.com/match/basketball/paris-CdCP6AWf/valencia-6w8lqYGE/?mid=A7ObYlS9",
+      "minutes": "13:17",
+      "points": 9,
+      "rebounds": 0,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 1
     }
   ]
 }
