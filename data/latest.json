@@ -1,15 +1,37 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-24T11:54:56.297Z",
+  "generated_at_utc": "2026-10-25T12:25:11.598Z",
   "rows": [
     {
-      "player": "Chris McCullough",
+      "player": "Adam Kemp",
       "game_date": "2026-10-24",
-      "game_url": "https://www.flashscore.com/match/basketball/mobis-phoebus-GzqLBy3r/seoul-thunders-bq6XAeIl/?mid=IR8zULMa",
-      "minutes": "24:11",
-      "points": 21,
+      "game_url": "https://www.flashscore.com/match/basketball/krosno-WOTk3dLH/lks-lodz-rymmyDJK/?mid=OSNeXLuA",
+      "minutes": "27:28",
+      "points": 5,
+      "rebounds": 14,
+      "assists": 4,
+      "steals": 0,
+      "turnovers": 2
+    },
+    {
+      "player": "Chris McCullough",
+      "game_date": "2026-10-25",
+      "game_url": "https://www.flashscore.com/match/basketball/kogas-SOcl7DHD/seoul-thunders-bq6XAeIl/?mid=zol8rLyg",
+      "minutes": "22:59",
+      "points": 8,
+      "rebounds": 3,
+      "assists": 0,
+      "steals": 3,
+      "turnovers": 1
+    },
+    {
+      "player": "Elijah Hughes",
+      "game_date": "2026-10-24",
+      "game_url": "https://www.flashscore.com/match/basketball/bonn-86MXctlE/ludwigsburg-rZFPnFXL/?mid=I9F3TAWH",
+      "minutes": "25:36",
+      "points": 17,
       "rebounds": 7,
-      "assists": 3,
+      "assists": 2,
       "steals": 1,
       "turnovers": 2
     },
@@ -23,17 +45,6 @@
       "assists": 6,
       "steals": 1,
       "turnovers": 2
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-10-23",
-      "game_url": "https://www.flashscore.com/match/basketball/paris-CdCP6AWf/valencia-6w8lqYGE/?mid=A7ObYlS9",
-      "minutes": "13:17",
-      "points": 9,
-      "rebounds": 0,
-      "assists": 1,
-      "steals": 0,
-      "turnovers": 1
     }
   ]
 }
