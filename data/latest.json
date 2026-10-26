@@ -1,18 +1,7 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-25T12:25:11.598Z",
+  "generated_at_utc": "2026-10-26T14:00:11.759Z",
   "rows": [
-    {
-      "player": "Adam Kemp",
-      "game_date": "2026-10-24",
-      "game_url": "https://www.flashscore.com/match/basketball/krosno-WOTk3dLH/lks-lodz-rymmyDJK/?mid=OSNeXLuA",
-      "minutes": "27:28",
-      "points": 5,
-      "rebounds": 14,
-      "assists": 4,
-      "steals": 0,
-      "turnovers": 2
-    },
     {
       "player": "Chris McCullough",
       "game_date": "2026-10-25",
@@ -25,26 +14,48 @@
       "turnovers": 1
     },
     {
-      "player": "Elijah Hughes",
-      "game_date": "2026-10-24",
-      "game_url": "https://www.flashscore.com/match/basketball/bonn-86MXctlE/ludwigsburg-rZFPnFXL/?mid=I9F3TAWH",
-      "minutes": "25:36",
-      "points": 17,
-      "rebounds": 7,
-      "assists": 2,
+      "player": "Colbey Ross",
+      "game_date": "2026-10-25",
+      "game_url": "https://www.flashscore.com/match/basketball/pallacanestro-trieste-f7SJ0Orj/verona-vFDZq8tS/?mid=MZPSp33e",
+      "minutes": "27'",
+      "points": 27,
+      "rebounds": 5,
+      "assists": 7,
       "steals": 1,
       "turnovers": 2
     },
     {
+      "player": "Grant Anticevich",
+      "game_date": "2026-10-25",
+      "game_url": "https://www.flashscore.com/match/basketball/donar-groningen-QX2dq7kE/okapi-aalst-dI2iPEEM/?mid=Uy3WZRRQ",
+      "minutes": "24:34",
+      "points": 9,
+      "rebounds": 7,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 1
+    },
+    {
       "player": "Jarrett Culver",
-      "game_date": "2026-10-24",
-      "game_url": "https://www.flashscore.com/match/basketball/brave-thunders-21lDfhpq/sendai-zsHYiPlb/?mid=G8keybKl",
-      "minutes": "29:32",
-      "points": 20,
-      "rebounds": 4,
-      "assists": 6,
-      "steals": 1,
+      "game_date": "2026-10-26",
+      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/shimane-QgfOpNX2/?mid=YLiayJyn",
+      "minutes": "32:34",
+      "points": 19,
+      "rebounds": 5,
+      "assists": 4,
+      "steals": 0,
       "turnovers": 2
+    },
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-10-25",
+      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/phoenix-hagen-j51PxKiN/?mid=tngLohnn",
+      "minutes": "25:07",
+      "points": 13,
+      "rebounds": 2,
+      "assists": 0,
+      "steals": 2,
+      "turnovers": 0
     }
   ]
 }
