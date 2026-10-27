@@ -1,40 +1,7 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-26T14:00:11.759Z",
+  "generated_at_utc": "2026-10-27T13:14:57.882Z",
   "rows": [
-    {
-      "player": "Chris McCullough",
-      "game_date": "2026-10-25",
-      "game_url": "https://www.flashscore.com/match/basketball/kogas-SOcl7DHD/seoul-thunders-bq6XAeIl/?mid=zol8rLyg",
-      "minutes": "22:59",
-      "points": 8,
-      "rebounds": 3,
-      "assists": 0,
-      "steals": 3,
-      "turnovers": 1
-    },
-    {
-      "player": "Colbey Ross",
-      "game_date": "2026-10-25",
-      "game_url": "https://www.flashscore.com/match/basketball/pallacanestro-trieste-f7SJ0Orj/verona-vFDZq8tS/?mid=MZPSp33e",
-      "minutes": "27'",
-      "points": 27,
-      "rebounds": 5,
-      "assists": 7,
-      "steals": 1,
-      "turnovers": 2
-    },
-    {
-      "player": "Grant Anticevich",
-      "game_date": "2026-10-25",
-      "game_url": "https://www.flashscore.com/match/basketball/donar-groningen-QX2dq7kE/okapi-aalst-dI2iPEEM/?mid=Uy3WZRRQ",
-      "minutes": "24:34",
-      "points": 9,
-      "rebounds": 7,
-      "assists": 1,
-      "steals": 0,
-      "turnovers": 1
-    },
     {
       "player": "Jarrett Culver",
       "game_date": "2026-10-26",
@@ -45,17 +12,6 @@
       "assists": 4,
       "steals": 0,
       "turnovers": 2
-    },
-    {
-      "player": "Sheldon Edwards",
-      "game_date": "2026-10-25",
-      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/phoenix-hagen-j51PxKiN/?mid=tngLohnn",
-      "minutes": "25:07",
-      "points": 13,
-      "rebounds": 2,
-      "assists": 0,
-      "steals": 2,
-      "turnovers": 0
     }
   ]
 }
