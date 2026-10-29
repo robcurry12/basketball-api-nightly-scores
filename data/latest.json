@@ -1,28 +1,5 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-28T13:53:47.073Z",
-  "rows": [
-    {
-      "player": "Elijah Harkless",
-      "game_date": "2026-10-28",
-      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/new-york-knicks-WCNO4nbt/?mid=xSsWqjzJ",
-      "minutes": "02:35",
-      "points": 0,
-      "rebounds": 0,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 0
-    },
-    {
-      "player": "Ian Dubose",
-      "game_date": "2026-10-27",
-      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/bc-prievidza-0Awz50IM/?mid=86CR0mME",
-      "minutes": "23:10",
-      "points": 7,
-      "rebounds": 5,
-      "assists": 3,
-      "steals": 0,
-      "turnovers": 1
-    }
-  ]
+  "generated_at_utc": "2026-10-29T13:59:59.184Z",
+  "rows": []
 }
