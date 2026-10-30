@@ -1,5 +1,28 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-10-29T13:59:59.184Z",
-  "rows": []
+  "generated_at_utc": "2026-10-30T13:55:20.013Z",
+  "rows": [
+    {
+      "player": "Chris McCullough",
+      "game_date": "2026-10-30",
+      "game_url": "https://www.flashscore.com/match/basketball/goyang-sono-lYbp8g27/seoul-thunders-bq6XAeIl/?mid=6PMlrCsA",
+      "minutes": "19:56",
+      "points": 15,
+      "rebounds": 10,
+      "assists": 0,
+      "steals": 3,
+      "turnovers": 6
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-10-29",
+      "game_url": "https://www.flashscore.com/match/basketball/maccabi-tel-aviv-nLuro05B/paris-CdCP6AWf/?mid=MRi5l1I7",
+      "minutes": "18:03",
+      "points": 13,
+      "rebounds": 1,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 4
+    }
+  ]
 }
