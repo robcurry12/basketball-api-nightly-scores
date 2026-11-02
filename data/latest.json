@@ -1,28 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-01T14:08:18.431Z",
+  "generated_at_utc": "2026-11-02T16:54:53.468Z",
   "rows": [
     {
-      "player": "Adam Kemp",
-      "game_date": "2026-10-31",
-      "game_url": "https://www.flashscore.com/match/basketball/krosno-WOTk3dLH/lancut-rsCjyO6I/?mid=KGj2mYV7",
-      "minutes": "25:55",
-      "points": 9,
-      "rebounds": 6,
+      "player": "Chris McCullough",
+      "game_date": "2026-11-01",
+      "game_url": "https://www.flashscore.com/match/basketball/seoul-knights-t8exAFXf/seoul-thunders-bq6XAeIl/?mid=4M3xgTeS",
+      "minutes": "27:44",
+      "points": 14,
+      "rebounds": 14,
       "assists": 1,
-      "steals": 1,
-      "turnovers": 3
-    },
-    {
-      "player": "Grant Anticevich",
-      "game_date": "2026-10-31",
-      "game_url": "https://www.flashscore.com/match/basketball/belfius-mons-fau3zUF9/okapi-aalst-dI2iPEEM/?mid=rakkuN36",
-      "minutes": "16:56",
-      "points": 5,
-      "rebounds": 5,
-      "assists": 0,
-      "steals": 1,
-      "turnovers": 2
+      "steals": 0,
+      "turnovers": 0
     },
     {
       "player": "Jarrett Culver",
@@ -36,13 +25,24 @@
       "turnovers": 6
     },
     {
-      "player": "Sheldon Edwards",
-      "game_date": "2026-10-31",
-      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/wurzburg-0bukcrmo/?mid=YuGAqNMF",
-      "minutes": "15:36",
-      "points": 5,
-      "rebounds": 0,
-      "assists": 0,
+      "player": "Terry Roberts",
+      "game_date": "2026-11-01",
+      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/newcastle-eagles-dr6g4o9A/?mid=vwNiHWye",
+      "minutes": "26:19",
+      "points": 0,
+      "rebounds": 7,
+      "assists": 5,
+      "steals": 1,
+      "turnovers": 2
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-11-01",
+      "game_url": "https://www.flashscore.com/match/basketball/chalon-saone-pK5YsrsB/paris-CdCP6AWf/?mid=0rpySR7d",
+      "minutes": "20:41",
+      "points": 8,
+      "rebounds": 1,
+      "assists": 1,
       "steals": 0,
       "turnovers": 1
     }
