@@ -1,50 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-02T16:54:53.468Z",
+  "generated_at_utc": "2026-11-03T14:54:57.024Z",
   "rows": [
     {
-      "player": "Chris McCullough",
-      "game_date": "2026-11-01",
-      "game_url": "https://www.flashscore.com/match/basketball/seoul-knights-t8exAFXf/seoul-thunders-bq6XAeIl/?mid=4M3xgTeS",
-      "minutes": "27:44",
-      "points": 14,
-      "rebounds": 14,
-      "assists": 1,
-      "steals": 0,
-      "turnovers": 0
-    },
-    {
-      "player": "Jarrett Culver",
-      "game_date": "2026-11-01",
-      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/tokyo-sunrockers-zaKcE2Gi/?mid=fg3o48Bk",
-      "minutes": "27:50",
-      "points": 31,
-      "rebounds": 8,
-      "assists": 5,
-      "steals": 1,
-      "turnovers": 6
-    },
-    {
-      "player": "Terry Roberts",
-      "game_date": "2026-11-01",
-      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/newcastle-eagles-dr6g4o9A/?mid=vwNiHWye",
-      "minutes": "26:19",
-      "points": 0,
-      "rebounds": 7,
-      "assists": 5,
+      "player": "Colbey Ross",
+      "game_date": "2026-11-02",
+      "game_url": "https://www.flashscore.com/match/basketball/pallacanestro-trieste-f7SJ0Orj/virtus-bologna-YwDFycYd/?mid=vH1foy9b",
+      "minutes": "27'",
+      "points": 18,
+      "rebounds": 2,
+      "assists": 6,
       "steals": 1,
       "turnovers": 2
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-11-01",
-      "game_url": "https://www.flashscore.com/match/basketball/chalon-saone-pK5YsrsB/paris-CdCP6AWf/?mid=0rpySR7d",
-      "minutes": "20:41",
-      "points": 8,
-      "rebounds": 1,
-      "assists": 1,
-      "steals": 0,
-      "turnovers": 1
     }
   ]
 }
