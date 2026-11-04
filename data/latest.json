@@ -1,16 +1,38 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-03T14:54:57.024Z",
+  "generated_at_utc": "2026-11-04T15:14:39.294Z",
   "rows": [
     {
-      "player": "Colbey Ross",
-      "game_date": "2026-11-02",
-      "game_url": "https://www.flashscore.com/match/basketball/pallacanestro-trieste-f7SJ0Orj/virtus-bologna-YwDFycYd/?mid=vH1foy9b",
-      "minutes": "27'",
-      "points": 18,
-      "rebounds": 2,
-      "assists": 6,
-      "steals": 1,
+      "player": "Ian Dubose",
+      "game_date": "2026-11-03",
+      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/yukatel-denizli-basket-fXRk4JY5/?mid=UDpcyhO0",
+      "minutes": "24:45",
+      "points": 17,
+      "rebounds": 5,
+      "assists": 4,
+      "steals": 3,
+      "turnovers": 3
+    },
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-11-03",
+      "game_url": "https://www.flashscore.com/match/basketball/bayern-6LstMRPo/braunschweig-Kz1C1dQ6/?mid=r7Dkd06L",
+      "minutes": "24:44",
+      "points": 12,
+      "rebounds": 4,
+      "assists": 0,
+      "steals": 3,
+      "turnovers": 0
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-11-03",
+      "game_url": "https://www.flashscore.com/match/basketball/cholet-6TSpW3Cb/paris-CdCP6AWf/?mid=r5AxnObf",
+      "minutes": "26:40",
+      "points": 11,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
       "turnovers": 2
     }
   ]
