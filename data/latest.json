@@ -1,38 +1,16 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-04T15:14:39.294Z",
+  "generated_at_utc": "2026-11-05T15:15:10.403Z",
   "rows": [
     {
-      "player": "Ian Dubose",
-      "game_date": "2026-11-03",
-      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/yukatel-denizli-basket-fXRk4JY5/?mid=UDpcyhO0",
-      "minutes": "24:45",
-      "points": 17,
-      "rebounds": 5,
-      "assists": 4,
-      "steals": 3,
-      "turnovers": 3
-    },
-    {
-      "player": "Sheldon Edwards",
-      "game_date": "2026-11-03",
-      "game_url": "https://www.flashscore.com/match/basketball/bayern-6LstMRPo/braunschweig-Kz1C1dQ6/?mid=r7Dkd06L",
-      "minutes": "24:44",
-      "points": 12,
-      "rebounds": 4,
-      "assists": 0,
-      "steals": 3,
-      "turnovers": 0
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-11-03",
-      "game_url": "https://www.flashscore.com/match/basketball/cholet-6TSpW3Cb/paris-CdCP6AWf/?mid=r5AxnObf",
-      "minutes": "26:40",
-      "points": 11,
-      "rebounds": 0,
-      "assists": 0,
-      "steals": 0,
+      "player": "Chris McCullough",
+      "game_date": "2026-11-05",
+      "game_url": "https://www.flashscore.com/match/basketball/mobis-phoebus-GzqLBy3r/seoul-thunders-bq6XAeIl/?mid=tMmA7SAL",
+      "minutes": "23:47",
+      "points": 8,
+      "rebounds": 7,
+      "assists": 3,
+      "steals": 1,
       "turnovers": 2
     }
   ]
