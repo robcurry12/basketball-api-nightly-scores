@@ -1,7 +1,29 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-05T15:15:10.403Z",
+  "generated_at_utc": "2026-11-06T14:51:17.341Z",
   "rows": [
+    {
+      "player": "Adam Kemp",
+      "game_date": "2026-11-05",
+      "game_url": "https://www.flashscore.com/match/basketball/kotwica-kolobrzeg-QLtBMYxi/krosno-WOTk3dLH/?mid=M3kH1OjI",
+      "minutes": "24:04",
+      "points": 10,
+      "rebounds": 7,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 2
+    },
+    {
+      "player": "Brandon Randolph",
+      "game_date": "2026-11-06",
+      "game_url": "https://www.flashscore.com/match/basketball/altiri-chiba-2VaVmkFP/chiba-rZwH8JWL/?mid=YNfuVyG5",
+      "minutes": "25:60",
+      "points": 23,
+      "rebounds": 4,
+      "assists": 2,
+      "steals": 2,
+      "turnovers": 2
+    },
     {
       "player": "Chris McCullough",
       "game_date": "2026-11-05",
@@ -12,6 +34,28 @@
       "assists": 3,
       "steals": 1,
       "turnovers": 2
+    },
+    {
+      "player": "Jarrett Culver",
+      "game_date": "2026-11-06",
+      "game_url": "https://www.flashscore.com/match/basketball/alvark-tokyo-4r8WC00A/sendai-zsHYiPlb/?mid=n7dXWcog",
+      "minutes": "30:07",
+      "points": 20,
+      "rebounds": 9,
+      "assists": 6,
+      "steals": 1,
+      "turnovers": 0
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-11-05",
+      "game_url": "https://www.flashscore.com/match/basketball/anadolu-efes-ny4KlAOf/paris-CdCP6AWf/?mid=nPkiHjhB",
+      "minutes": "22:29",
+      "points": 12,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 1,
+      "turnovers": 0
     }
   ]
 }
