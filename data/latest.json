@@ -1,16 +1,16 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-07T13:48:11.571Z",
+  "generated_at_utc": "2026-11-08T14:09:06.084Z",
   "rows": [
     {
       "player": "Brandon Randolph",
-      "game_date": "2026-11-06",
-      "game_url": "https://www.flashscore.com/match/basketball/altiri-chiba-2VaVmkFP/chiba-rZwH8JWL/?mid=YNfuVyG5",
-      "minutes": "25:60",
-      "points": 23,
-      "rebounds": 4,
-      "assists": 2,
-      "steals": 2,
+      "game_date": "2026-11-08",
+      "game_url": "https://www.flashscore.com/match/basketball/chiba-rZwH8JWL/saga-ballooners-pvq1BzRr/?mid=Ys1uzOc2",
+      "minutes": "14:37",
+      "points": 9,
+      "rebounds": 0,
+      "assists": 1,
+      "steals": 1,
       "turnovers": 2
     },
     {
@@ -25,13 +25,24 @@
       "turnovers": 4
     },
     {
-      "player": "Jarrett Culver",
-      "game_date": "2026-11-06",
-      "game_url": "https://www.flashscore.com/match/basketball/alvark-tokyo-4r8WC00A/sendai-zsHYiPlb/?mid=n7dXWcog",
-      "minutes": "30:07",
-      "points": 20,
-      "rebounds": 9,
-      "assists": 6,
+      "player": "Colbey Ross",
+      "game_date": "2026-11-08",
+      "game_url": "https://www.flashscore.com/match/basketball/bc-roma-lGVwuvwA/pallacanestro-trieste-f7SJ0Orj/?mid=nwo03WzK",
+      "minutes": "26'",
+      "points": 17,
+      "rebounds": 6,
+      "assists": 7,
+      "steals": 1,
+      "turnovers": 6
+    },
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-11-07",
+      "game_url": "https://www.flashscore.com/match/basketball/bonn-86MXctlE/braunschweig-Kz1C1dQ6/?mid=YwiV8wjR",
+      "minutes": "22:43",
+      "points": 15,
+      "rebounds": 1,
+      "assists": 1,
       "steals": 1,
       "turnovers": 0
     }
