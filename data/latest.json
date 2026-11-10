@@ -1,16 +1,16 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-09T17:16:37.135Z",
+  "generated_at_utc": "2026-11-10T15:28:41.268Z",
   "rows": [
     {
       "player": "Brandon Randolph",
-      "game_date": "2026-11-08",
-      "game_url": "https://www.flashscore.com/match/basketball/chiba-rZwH8JWL/saga-ballooners-pvq1BzRr/?mid=Ys1uzOc2",
-      "minutes": "14:37",
-      "points": 9,
-      "rebounds": 0,
+      "game_date": "2026-11-10",
+      "game_url": "https://www.flashscore.com/match/basketball/chiba-rZwH8JWL/osaka-IgCfquRj/?mid=pdyChiVQ",
+      "minutes": "23:49",
+      "points": 27,
+      "rebounds": 6,
       "assists": 1,
-      "steals": 1,
+      "steals": 2,
       "turnovers": 2
     },
     {
@@ -25,50 +25,6 @@
       "turnovers": 2
     },
     {
-      "player": "Colbey Ross",
-      "game_date": "2026-11-08",
-      "game_url": "https://www.flashscore.com/match/basketball/bc-roma-lGVwuvwA/pallacanestro-trieste-f7SJ0Orj/?mid=nwo03WzK",
-      "minutes": "26'",
-      "points": 17,
-      "rebounds": 6,
-      "assists": 7,
-      "steals": 1,
-      "turnovers": 6
-    },
-    {
-      "player": "Elijah Hughes",
-      "game_date": "2026-11-08",
-      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/oldenburg-fRK1cKIQ/?mid=xzt91er1",
-      "minutes": "27:52",
-      "points": 7,
-      "rebounds": 1,
-      "assists": 0,
-      "steals": 1,
-      "turnovers": 2
-    },
-    {
-      "player": "Grant Anticevich",
-      "game_date": "2026-11-08",
-      "game_url": "https://www.flashscore.com/match/basketball/circus-brussels-6RL7j9dc/okapi-aalst-dI2iPEEM/?mid=xMpdeZg4",
-      "minutes": "37:11",
-      "points": 17,
-      "rebounds": 11,
-      "assists": 1,
-      "steals": 1,
-      "turnovers": 3
-    },
-    {
-      "player": "Ian Dubose",
-      "game_date": "2026-11-08",
-      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/naestved-vglvV23R/?mid=A7K97mQE",
-      "minutes": "23:50",
-      "points": 9,
-      "rebounds": 4,
-      "assists": 1,
-      "steals": 0,
-      "turnovers": 5
-    },
-    {
       "player": "Jarrett Culver",
       "game_date": "2026-11-09",
       "game_url": "https://www.flashscore.com/match/basketball/nagasaki-OnJVHUCs/sendai-zsHYiPlb/?mid=pOVIW987",
@@ -78,28 +34,6 @@
       "assists": 4,
       "steals": 2,
       "turnovers": 4
-    },
-    {
-      "player": "Terry Roberts",
-      "game_date": "2026-11-08",
-      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/liverpool-SMATsK2F/?mid=xz4uSmjD",
-      "minutes": "24:04",
-      "points": 9,
-      "rebounds": 0,
-      "assists": 4,
-      "steals": 1,
-      "turnovers": 3
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-11-08",
-      "game_url": "https://www.flashscore.com/match/basketball/jl-bourg-A5BNuIF5/paris-CdCP6AWf/?mid=fsRdUbXi",
-      "minutes": "15:37",
-      "points": 3,
-      "rebounds": 0,
-      "assists": 1,
-      "steals": 0,
-      "turnovers": 1
     }
   ]
 }
