@@ -1,6 +1,6 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-12T15:51:14.081Z",
+  "generated_at_utc": "2026-11-13T15:11:39.021Z",
   "rows": [
     {
       "player": "Brandon Randolph",
@@ -14,37 +14,15 @@
       "turnovers": 1
     },
     {
-      "player": "Ian Dubose",
-      "game_date": "2026-11-11",
-      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/benfica-IuodFyui/?mid=2Rr5ZVhD",
-      "minutes": "27:28",
-      "points": 16,
-      "rebounds": 2,
-      "assists": 2,
-      "steals": 2,
-      "turnovers": 3
-    },
-    {
       "player": "Jarrett Culver",
-      "game_date": "2026-11-11",
-      "game_url": "https://www.flashscore.com/match/basketball/hiroshima-dragonflies-O2zklv01/sendai-zsHYiPlb/?mid=pM6wdQyJ",
-      "minutes": "31:14",
-      "points": 32,
-      "rebounds": 11,
-      "assists": 8,
+      "game_date": "2026-11-13",
+      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/shimane-QgfOpNX2/?mid=n3MqCxSG",
+      "minutes": "32:10",
+      "points": 22,
+      "rebounds": 7,
+      "assists": 9,
       "steals": 0,
-      "turnovers": 4
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-11-11",
-      "game_url": "https://www.flashscore.com/match/basketball/fenerbahce-rDhoZR1l/paris-CdCP6AWf/?mid=pMWvS76T",
-      "minutes": "22:20",
-      "points": 11,
-      "rebounds": 0,
-      "assists": 2,
-      "steals": 1,
-      "turnovers": 0
+      "turnovers": 1
     }
   ]
 }
