@@ -1,16 +1,49 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-13T15:11:39.021Z",
+  "generated_at_utc": "2026-11-14T14:00:19.163Z",
   "rows": [
     {
       "player": "Brandon Randolph",
-      "game_date": "2026-11-12",
-      "game_url": "https://www.flashscore.com/match/basketball/chiba-rZwH8JWL/shiga-6J8jpLBp/?mid=GOm3CoMa",
-      "minutes": "25:59",
-      "points": 31,
-      "rebounds": 8,
-      "assists": 4,
+      "game_date": "2026-11-14",
+      "game_url": "https://www.flashscore.com/match/basketball/chiba-rZwH8JWL/nagasaki-OnJVHUCs/?mid=ddb9ScCc",
+      "minutes": "23:25",
+      "points": 22,
+      "rebounds": 4,
+      "assists": 2,
       "steals": 0,
+      "turnovers": 1
+    },
+    {
+      "player": "Chris McCullough",
+      "game_date": "2026-11-14",
+      "game_url": "https://www.flashscore.com/match/basketball/anyang-jungkwanjang-E7zW2PzK/seoul-thunders-bq6XAeIl/?mid=xpXWCr4b",
+      "minutes": "23:01",
+      "points": 15,
+      "rebounds": 8,
+      "assists": 2,
+      "steals": 0,
+      "turnovers": 1
+    },
+    {
+      "player": "Elijah Hughes",
+      "game_date": "2026-11-13",
+      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/phoenix-hagen-j51PxKiN/?mid=hKyYHGSs",
+      "minutes": "25:01",
+      "points": 7,
+      "rebounds": 2,
+      "assists": 1,
+      "steals": 1,
+      "turnovers": 1
+    },
+    {
+      "player": "Ian Dubose",
+      "game_date": "2026-11-13",
+      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/vejen-th6Ifvpo/?mid=8b4n4ZzK",
+      "minutes": "11:57",
+      "points": 8,
+      "rebounds": 2,
+      "assists": 6,
+      "steals": 2,
       "turnovers": 1
     },
     {
