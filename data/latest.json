@@ -1,7 +1,18 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-14T14:00:19.163Z",
+  "generated_at_utc": "2026-11-15T14:35:52.468Z",
   "rows": [
+    {
+      "player": "Adam Kemp",
+      "game_date": "2026-11-14",
+      "game_url": "https://www.flashscore.com/match/basketball/inowroclaw-QXhdDMJp/krosno-WOTk3dLH/?mid=WdLPhlPp",
+      "minutes": "30:23",
+      "points": 15,
+      "rebounds": 9,
+      "assists": 0,
+      "steals": 0,
+      "turnovers": 3
+    },
     {
       "player": "Brandon Randolph",
       "game_date": "2026-11-14",
@@ -25,35 +36,35 @@
       "turnovers": 1
     },
     {
-      "player": "Elijah Hughes",
-      "game_date": "2026-11-13",
-      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/phoenix-hagen-j51PxKiN/?mid=hKyYHGSs",
-      "minutes": "25:01",
-      "points": 7,
-      "rebounds": 2,
-      "assists": 1,
-      "steals": 1,
+      "player": "Elijah Harkless",
+      "game_date": "2026-11-15",
+      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/miami-heat-CQ7AXnT5/?mid=hj2wKihT",
+      "minutes": "01:41",
+      "points": 2,
+      "rebounds": 0,
+      "assists": 0,
+      "steals": 0,
       "turnovers": 1
     },
     {
-      "player": "Ian Dubose",
-      "game_date": "2026-11-13",
-      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/vejen-th6Ifvpo/?mid=8b4n4ZzK",
-      "minutes": "11:57",
+      "player": "Grant Anticevich",
+      "game_date": "2026-11-14",
+      "game_url": "https://www.flashscore.com/match/basketball/den-bosch-4W1bkk62/okapi-aalst-dI2iPEEM/?mid=b9zNb80d",
+      "minutes": "35:33",
+      "points": 11,
+      "rebounds": 8,
+      "assists": 0,
+      "steals": 0,
+      "turnovers": 1
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-11-14",
+      "game_url": "https://www.flashscore.com/match/basketball/limoges-E99wxkLM/paris-CdCP6AWf/?mid=nwLeiry8",
+      "minutes": "17:39",
       "points": 8,
-      "rebounds": 2,
-      "assists": 6,
-      "steals": 2,
-      "turnovers": 1
-    },
-    {
-      "player": "Jarrett Culver",
-      "game_date": "2026-11-13",
-      "game_url": "https://www.flashscore.com/match/basketball/sendai-zsHYiPlb/shimane-QgfOpNX2/?mid=n3MqCxSG",
-      "minutes": "32:10",
-      "points": 22,
-      "rebounds": 7,
-      "assists": 9,
+      "rebounds": 3,
+      "assists": 1,
       "steals": 0,
       "turnovers": 1
     }
