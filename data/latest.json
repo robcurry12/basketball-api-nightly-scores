@@ -1,18 +1,7 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-16T16:51:07.563Z",
+  "generated_at_utc": "2026-11-17T16:46:36.597Z",
   "rows": [
-    {
-      "player": "AJ Smith",
-      "game_date": "2026-11-15",
-      "game_url": "https://www.flashscore.com/match/basketball/maroussi-K8AGZZPg/vikos-WQFA2uo8/?mid=6k4UoBtH",
-      "minutes": "2:11",
-      "points": 0,
-      "rebounds": 0,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 0
-    },
     {
       "player": "Brandon Randolph",
       "game_date": "2026-11-16",
@@ -23,50 +12,6 @@
       "assists": 2,
       "steals": 3,
       "turnovers": 2
-    },
-    {
-      "player": "Colbey Ross",
-      "game_date": "2026-11-15",
-      "game_url": "https://www.flashscore.com/match/basketball/basket-napoli-CMsg9VYk/pallacanestro-trieste-f7SJ0Orj/?mid=EqZAAmrm",
-      "minutes": "30'",
-      "points": 8,
-      "rebounds": 8,
-      "assists": 9,
-      "steals": 0,
-      "turnovers": 2
-    },
-    {
-      "player": "Elijah Harkless",
-      "game_date": "2026-11-15",
-      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/miami-heat-CQ7AXnT5/?mid=hj2wKihT",
-      "minutes": "01:41",
-      "points": 2,
-      "rebounds": 0,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 1
-    },
-    {
-      "player": "Sheldon Edwards",
-      "game_date": "2026-11-15",
-      "game_url": "https://www.flashscore.com/match/basketball/braunschweig-Kz1C1dQ6/chemnitz-hInQh5sp/?mid=2Dm183eo",
-      "minutes": "21:39",
-      "points": 11,
-      "rebounds": 2,
-      "assists": 0,
-      "steals": 1,
-      "turnovers": 3
-    },
-    {
-      "player": "Terry Roberts",
-      "game_date": "2026-11-15",
-      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/leicester-riders-SbIK5mPi/?mid=hKa4r9zf",
-      "minutes": "27:57",
-      "points": 12,
-      "rebounds": 3,
-      "assists": 7,
-      "steals": 2,
-      "turnovers": 3
     }
   ]
 }
