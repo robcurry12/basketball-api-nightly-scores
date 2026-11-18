@@ -1,17 +1,61 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-17T16:46:36.597Z",
+  "generated_at_utc": "2026-11-18T16:17:37.789Z",
   "rows": [
     {
       "player": "Brandon Randolph",
-      "game_date": "2026-11-16",
-      "game_url": "https://www.flashscore.com/match/basketball/chiba-rZwH8JWL/neophoenix-0xWNl13T/?mid=O0sxjhAL",
-      "minutes": "32:55",
-      "points": 41,
+      "game_date": "2026-11-18",
+      "game_url": "https://www.flashscore.com/match/basketball/akita-n3eKo3Id/chiba-rZwH8JWL/?mid=zHrE0rOt",
+      "minutes": "23:18",
+      "points": 12,
       "rebounds": 2,
-      "assists": 2,
+      "assists": 0,
+      "steals": 0,
+      "turnovers": 3
+    },
+    {
+      "player": "Chris McCullough",
+      "game_date": "2026-11-18",
+      "game_url": "https://www.flashscore.com/match/basketball/lg-sakers-fBat9Zn1/seoul-thunders-bq6XAeIl/?mid=zsEKNaIG",
+      "minutes": "30:00",
+      "points": 19,
+      "rebounds": 11,
+      "assists": 6,
+      "steals": 3,
+      "turnovers": 3
+    },
+    {
+      "player": "Elijah Harkless",
+      "game_date": "2026-11-18",
+      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/san-antonio-spurs-IwmkErSH/?mid=bRsrhx4C",
+      "minutes": "03:42",
+      "points": 0,
+      "rebounds": 1,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 0
+    },
+    {
+      "player": "Jarrett Culver",
+      "game_date": "2026-11-18",
+      "game_url": "https://www.flashscore.com/match/basketball/neophoenix-0xWNl13T/sendai-zsHYiPlb/?mid=KWnkpNw0",
+      "minutes": "36:07",
+      "points": 29,
+      "rebounds": 8,
+      "assists": 3,
       "steals": 3,
       "turnovers": 2
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-11-17",
+      "game_url": "https://www.flashscore.com/match/basketball/barcelona-EDQLcAfL/paris-CdCP6AWf/?mid=Gr62XNa6",
+      "minutes": "18:57",
+      "points": 10,
+      "rebounds": 1,
+      "assists": 0,
+      "steals": 0,
+      "turnovers": 0
     }
   ]
 }
