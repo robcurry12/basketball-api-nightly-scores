@@ -1,6 +1,6 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-18T16:17:37.789Z",
+  "generated_at_utc": "2026-11-19T16:25:24.948Z",
   "rows": [
     {
       "player": "Brandon Randolph",
@@ -26,14 +26,25 @@
     },
     {
       "player": "Elijah Harkless",
+      "game_date": "2026-11-19",
+      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/new-orleans-pelicans-U3yc9SkP/?mid=bPI2HhXN",
+      "minutes": "14:17",
+      "points": 6,
+      "rebounds": 2,
+      "assists": 4,
+      "steals": 1,
+      "turnovers": 1
+    },
+    {
+      "player": "Ian Dubose",
       "game_date": "2026-11-18",
-      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/san-antonio-spurs-IwmkErSH/?mid=bRsrhx4C",
-      "minutes": "03:42",
-      "points": 0,
-      "rebounds": 1,
-      "assists": 1,
-      "steals": 0,
-      "turnovers": 0
+      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/geneva-lions-ML34PI1F/?mid=S6aGtm0t",
+      "minutes": "29:08",
+      "points": 19,
+      "rebounds": 5,
+      "assists": 6,
+      "steals": 2,
+      "turnovers": 3
     },
     {
       "player": "Jarrett Culver",
@@ -45,17 +56,6 @@
       "assists": 3,
       "steals": 3,
       "turnovers": 2
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-11-17",
-      "game_url": "https://www.flashscore.com/match/basketball/barcelona-EDQLcAfL/paris-CdCP6AWf/?mid=Gr62XNa6",
-      "minutes": "18:57",
-      "points": 10,
-      "rebounds": 1,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 0
     }
   ]
 }
