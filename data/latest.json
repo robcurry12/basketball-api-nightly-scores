@@ -1,29 +1,7 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-19T16:25:24.948Z",
+  "generated_at_utc": "2026-11-20T15:58:47.419Z",
   "rows": [
-    {
-      "player": "Brandon Randolph",
-      "game_date": "2026-11-18",
-      "game_url": "https://www.flashscore.com/match/basketball/akita-n3eKo3Id/chiba-rZwH8JWL/?mid=zHrE0rOt",
-      "minutes": "23:18",
-      "points": 12,
-      "rebounds": 2,
-      "assists": 0,
-      "steals": 0,
-      "turnovers": 3
-    },
-    {
-      "player": "Chris McCullough",
-      "game_date": "2026-11-18",
-      "game_url": "https://www.flashscore.com/match/basketball/lg-sakers-fBat9Zn1/seoul-thunders-bq6XAeIl/?mid=zsEKNaIG",
-      "minutes": "30:00",
-      "points": 19,
-      "rebounds": 11,
-      "assists": 6,
-      "steals": 3,
-      "turnovers": 3
-    },
     {
       "player": "Elijah Harkless",
       "game_date": "2026-11-19",
@@ -36,26 +14,26 @@
       "turnovers": 1
     },
     {
-      "player": "Ian Dubose",
-      "game_date": "2026-11-18",
-      "game_url": "https://www.flashscore.com/match/basketball/bakken-bears-vRsVzCMd/geneva-lions-ML34PI1F/?mid=S6aGtm0t",
-      "minutes": "29:08",
-      "points": 19,
-      "rebounds": 5,
-      "assists": 6,
-      "steals": 2,
+      "player": "Terry Roberts",
+      "game_date": "2026-11-19",
+      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/surrey-89ers-YPUfUVB7/?mid=QDFrGt7C",
+      "minutes": "36:25",
+      "points": 10,
+      "rebounds": 8,
+      "assists": 4,
+      "steals": 0,
       "turnovers": 3
     },
     {
-      "player": "Jarrett Culver",
-      "game_date": "2026-11-18",
-      "game_url": "https://www.flashscore.com/match/basketball/neophoenix-0xWNl13T/sendai-zsHYiPlb/?mid=KWnkpNw0",
-      "minutes": "36:07",
-      "points": 29,
-      "rebounds": 8,
-      "assists": 3,
-      "steals": 3,
-      "turnovers": 2
+      "player": "Tyson Etienne",
+      "game_date": "2026-11-19",
+      "game_url": "https://www.flashscore.com/match/basketball/hapoel-tel-aviv-x0WjVzjP/paris-CdCP6AWf/?mid=2wsNdvTH",
+      "minutes": "15:00",
+      "points": 6,
+      "rebounds": 0,
+      "assists": 2,
+      "steals": 0,
+      "turnovers": 1
     }
   ]
 }
