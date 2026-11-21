@@ -1,5 +1,5 @@
 {
-    "generated_at_utc": "2026-10-08T13:32:02+00:00",
+    "generated_at_utc": "2026-11-21T16:42:26+00:00",
     "players": [
         {
             "label": "Adam Kemp",
@@ -25,6 +25,11 @@
             "label": "Bryce Harris",
             "flashscore_slug": "harris-bryce",
             "flashscore_id": "fmwE3Xwn"
+        },
+        {
+            "label": "Cam Martin",
+            "flashscore_slug": "martin-cameron",
+            "flashscore_id": "KbQP8aQ1"
         },
         {
             "label": "Cam Parker",
@@ -82,6 +87,31 @@
             "flashscore_id": "CxVYeobc"
         },
         {
+            "label": "Khalid Moore",
+            "flashscore_slug": "moore-khalid",
+            "flashscore_id": "UHqVeKUl"
+        },
+        {
+            "label": "Luke Petrasek",
+            "flashscore_slug": "petrasek-luke",
+            "flashscore_id": "2H5JZZyA"
+        },
+        {
+            "label": "Malcolm Hill",
+            "flashscore_slug": "hill-malcolm",
+            "flashscore_id": "pYtM3sfg"
+        },
+        {
+            "label": "Mark Smith",
+            "flashscore_slug": "smith-mark",
+            "flashscore_id": "ULeCKVHP"
+        },
+        {
+            "label": "MJ Iraldi",
+            "flashscore_slug": "iraldi-m-j",
+            "flashscore_id": "nyuDaBJ0"
+        },
+        {
             "label": "Noah Vonleh",
             "flashscore_slug": "bryant-keyshawn",
             "flashscore_id": "YHh0Il6N"
@@ -115,6 +145,11 @@
             "label": "Terry Roberts",
             "flashscore_slug": "roberts-terry",
             "flashscore_id": "K0mmce1n"
+        },
+        {
+            "label": "Ticket Gaines",
+            "flashscore_slug": "gaines-davonte",
+            "flashscore_id": "jPNlrprg"
         },
         {
             "label": "Tyson Etienne",
