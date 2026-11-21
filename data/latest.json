@@ -1,37 +1,15 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-20T15:58:47.419Z",
+  "generated_at_utc": "2026-11-21T15:10:35.900Z",
   "rows": [
     {
-      "player": "Elijah Harkless",
-      "game_date": "2026-11-19",
-      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/new-orleans-pelicans-U3yc9SkP/?mid=bPI2HhXN",
-      "minutes": "14:17",
-      "points": 6,
-      "rebounds": 2,
-      "assists": 4,
-      "steals": 1,
-      "turnovers": 1
-    },
-    {
-      "player": "Terry Roberts",
-      "game_date": "2026-11-19",
-      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/surrey-89ers-YPUfUVB7/?mid=QDFrGt7C",
-      "minutes": "36:25",
-      "points": 10,
+      "player": "Grant Anticevich",
+      "game_date": "2026-11-20",
+      "game_url": "https://www.flashscore.com/match/basketball/limburg-0fEMgMc1/okapi-aalst-dI2iPEEM/?mid=ltE2Bop2",
+      "minutes": "24:53",
+      "points": 4,
       "rebounds": 8,
-      "assists": 4,
-      "steals": 0,
-      "turnovers": 3
-    },
-    {
-      "player": "Tyson Etienne",
-      "game_date": "2026-11-19",
-      "game_url": "https://www.flashscore.com/match/basketball/hapoel-tel-aviv-x0WjVzjP/paris-CdCP6AWf/?mid=2wsNdvTH",
-      "minutes": "15:00",
-      "points": 6,
-      "rebounds": 0,
-      "assists": 2,
+      "assists": 1,
       "steals": 0,
       "turnovers": 1
     }
