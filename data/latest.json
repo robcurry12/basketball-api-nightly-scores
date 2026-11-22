@@ -1,17 +1,61 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-21T15:10:35.900Z",
+  "generated_at_utc": "2026-11-22T15:07:50.501Z",
   "rows": [
     {
-      "player": "Grant Anticevich",
-      "game_date": "2026-11-20",
-      "game_url": "https://www.flashscore.com/match/basketball/limburg-0fEMgMc1/okapi-aalst-dI2iPEEM/?mid=ltE2Bop2",
-      "minutes": "24:53",
-      "points": 4,
-      "rebounds": 8,
-      "assists": 1,
+      "player": "AJ Smith",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/mykonos-Iqi5attH/vikos-WQFA2uo8/?mid=p0q7rciM",
+      "minutes": "4:54",
+      "points": 0,
+      "rebounds": 0,
+      "assists": 2,
       "steals": 0,
-      "turnovers": 1
+      "turnovers": 0
+    },
+    {
+      "player": "Colbey Ross",
+      "game_date": "2026-11-21",
+      "game_url": "https://www.flashscore.com/match/basketball/pallacanestro-trieste-f7SJ0Orj/reggiana-4IvWGyfG/?mid=6JkpC0Ji",
+      "minutes": "23'",
+      "points": 13,
+      "rebounds": 3,
+      "assists": 10,
+      "steals": 2,
+      "turnovers": 5
+    },
+    {
+      "player": "Khalid Moore",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/as-karditsas-EHW5nnIO/olympiacos-piraeus-ptNXXDf6/?mid=xOTlty1t",
+      "minutes": "19:15",
+      "points": 0,
+      "rebounds": 7,
+      "assists": 0,
+      "steals": 0,
+      "turnovers": 2
+    },
+    {
+      "player": "Luke Petrasek",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/bilbao-GWZ15Sne/saski-baskonia-8zQPdU9R/?mid=4bD4g6d5",
+      "minutes": "27:09",
+      "points": 9,
+      "rebounds": 3,
+      "assists": 1,
+      "steals": 1,
+      "turnovers": 2
+    },
+    {
+      "player": "Sheldon Edwards",
+      "game_date": "2026-11-21",
+      "game_url": "https://www.flashscore.com/match/basketball/bamberg-baskets-8CRfmy39/braunschweig-Kz1C1dQ6/?mid=CQT0CXDG",
+      "minutes": "26:24",
+      "points": 13,
+      "rebounds": 1,
+      "assists": 2,
+      "steals": 4,
+      "turnovers": 2
     }
   ]
 }
