@@ -1,7 +1,18 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-22T15:07:50.501Z",
+  "generated_at_utc": "2026-11-23T19:03:28.088Z",
   "rows": [
+    {
+      "player": "Adam Kemp",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/krosno-WOTk3dLH/leszno-KYuEJ4sr/?mid=8GeiTU0c",
+      "minutes": "27:40",
+      "points": 5,
+      "rebounds": 11,
+      "assists": 0,
+      "steals": 0,
+      "turnovers": 5
+    },
     {
       "player": "AJ Smith",
       "game_date": "2026-11-22",
@@ -14,15 +25,15 @@
       "turnovers": 0
     },
     {
-      "player": "Colbey Ross",
-      "game_date": "2026-11-21",
-      "game_url": "https://www.flashscore.com/match/basketball/pallacanestro-trieste-f7SJ0Orj/reggiana-4IvWGyfG/?mid=6JkpC0Ji",
-      "minutes": "23'",
-      "points": 13,
-      "rebounds": 3,
-      "assists": 10,
-      "steals": 2,
-      "turnovers": 5
+      "player": "Elijah Hughes",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/ludwigsburg-rZFPnFXL/syntainics-mbc-Ue0Tyv7T/?mid=trJXQWS9",
+      "minutes": "27:41",
+      "points": 17,
+      "rebounds": 2,
+      "assists": 4,
+      "steals": 0,
+      "turnovers": 2
     },
     {
       "player": "Khalid Moore",
@@ -47,15 +58,37 @@
       "turnovers": 2
     },
     {
-      "player": "Sheldon Edwards",
-      "game_date": "2026-11-21",
-      "game_url": "https://www.flashscore.com/match/basketball/bamberg-baskets-8CRfmy39/braunschweig-Kz1C1dQ6/?mid=CQT0CXDG",
-      "minutes": "26:24",
+      "player": "Malcolm Hill",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/csu-cluj-napoca-Iy6Md8xS/zadar-4Itk3GMs/?mid=vir8lg85",
+      "minutes": "21:38",
+      "points": 6,
+      "rebounds": 7,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 1
+    },
+    {
+      "player": "Terry Roberts",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/caledonia-gladiators-KMjc1PwN/cheshire-phoenix-Wn7QspXp/?mid=nwP9B74t",
+      "minutes": "31:36",
+      "points": 11,
+      "rebounds": 3,
+      "assists": 7,
+      "steals": 2,
+      "turnovers": 3
+    },
+    {
+      "player": "Tyson Etienne",
+      "game_date": "2026-11-22",
+      "game_url": "https://www.flashscore.com/match/basketball/gravelines-dunkerque-48I6PZQq/paris-CdCP6AWf/?mid=hv8puGoA",
+      "minutes": "22:02",
       "points": 13,
       "rebounds": 1,
       "assists": 2,
-      "steals": 4,
-      "turnovers": 2
+      "steals": 0,
+      "turnovers": 1
     }
   ]
 }
