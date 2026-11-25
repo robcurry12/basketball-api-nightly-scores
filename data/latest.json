@@ -1,5 +1,17 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-24T18:44:12.784Z",
-  "rows": []
+  "generated_at_utc": "2026-11-25T17:52:28.025Z",
+  "rows": [
+    {
+      "player": "Elijah Harkless",
+      "game_date": "2026-11-25",
+      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/orlando-magic-QZMS36Dn/?mid=O6Oqpuzq",
+      "minutes": "13:40",
+      "points": 7,
+      "rebounds": 1,
+      "assists": 2,
+      "steals": 0,
+      "turnovers": 1
+    }
+  ]
 }
