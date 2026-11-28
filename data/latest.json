@@ -1,5 +1,28 @@
 {
   "source": "github-actions",
-  "generated_at_utc": "2026-11-27T17:18:40.699Z",
-  "rows": []
+  "generated_at_utc": "2026-11-28T16:01:37.651Z",
+  "rows": [
+    {
+      "player": "Adam Kemp",
+      "game_date": "2026-11-27",
+      "game_url": "https://www.flashscore.com/match/basketball/krosno-WOTk3dLH/wkk-wroclaw-v1ZXofL4/?mid=hbUXSL6E",
+      "minutes": "33:36",
+      "points": 6,
+      "rebounds": 15,
+      "assists": 1,
+      "steals": 0,
+      "turnovers": 0
+    },
+    {
+      "player": "Elijah Harkless",
+      "game_date": "2026-11-28",
+      "game_url": "https://www.flashscore.com/match/basketball/detroit-pistons-UcjMRj6J/milwaukee-bucks-QTBEW6rC/?mid=jX8Tdwyn",
+      "minutes": "26:44",
+      "points": 14,
+      "rebounds": 4,
+      "assists": 7,
+      "steals": 1,
+      "turnovers": 0
+    }
+  ]
 }
